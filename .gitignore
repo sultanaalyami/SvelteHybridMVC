@@ -1,0 +1,19 @@
+# Build results
+bin/
+obj/
+
+# Node
+node_modules/
+
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

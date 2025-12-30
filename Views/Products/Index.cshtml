@@ -1,0 +1,55 @@
+@model IEnumerable<SvelteHybridMVC.Models.Product>
+@{
+    ViewData["Title"] = "إدارة المنتجات";
+}
+
+<div class="products-page">
+    <h1>@ViewData["Title"]</h1>
+    
+    <!-- مكون Svelte تفاعلي -->
+    <div data-svelte-component="ProductGrid"
+         data-props='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model))'>
+        
+        <!-- محتوى Razor للـ SEO و fallback -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>السعر</th>
+                    <th>المخزون</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr data-product-id="@product.Id">
+                        <td>@product.Name</td>
+                        <td>@product.Price.ToString("C")</td>
+                        <td>
+                            <span class="badge @(product.Stock < 10 ? "low-stock" : "")">
+                                @product.Stock
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm">تعديل</a>
+                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">حذف</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="module">
+        // تهيئة مكون Svelte
+        import { mount } from '/_svelte/ProductGrid.js';
+        
+        document.querySelectorAll('[data-svelte-component="ProductGrid"]').forEach(el => {
+            const props = JSON.parse(el.dataset.props || '{}');
+            mount(el, { props });
+        });
+    </script>
+}

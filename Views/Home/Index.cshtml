@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "الرئيسية";
+}
+
+<div class="welcome-section">
+    <h1>مرحباً بك في SvelteHybridMVC</h1>
+    <p>نظام هجين يجمع بين قوة ASP.NET MVC وتفاعلية SvelteKit</p>
+    
+    <div class="features">
+        <div class="feature">
+            <h3>🎯 MVC مهيمن</h3>
+            <p>تحكم كامل من Razor مع مكونات Svelte تفاعلية</p>
+        </div>
+        <div class="feature">
+            <h3>⚡ SSR سريع</h3>
+            <p>عرض على الخادم مع Hydration انتقائي</p>
+        </div>
+        <div class="feature">
+            <h3>🔄 تحديث حي</h3>
+            <p>Hot Reload لكل من C# و Svelte</p>
+        </div>
+    </div>
+    
+    <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
+        استعرض المنتجات
+    </a>
+</div>
