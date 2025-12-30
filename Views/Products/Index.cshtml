@@ -8,7 +8,7 @@
     
     <!-- مكون Svelte تفاعلي -->
     <div data-svelte-component="ProductGrid"
-         data-props='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model))'>
+         data-props='@System.Text.Json.JsonSerializer.Serialize(Model)'>
         
         <!-- محتوى Razor للـ SEO و fallback -->
         <table class="table">
@@ -33,7 +33,10 @@
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm">تعديل</a>
-                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">حذف</a>
+                            <form asp-action="Delete" asp-route-id="@product.Id" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">حذف</button>
+                            </form>
                         </td>
                     </tr>
                 }

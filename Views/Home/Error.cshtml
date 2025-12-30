@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "خطأ";
+}
+
+<div class="error-page">
+    <h1 class="text-danger">خطأ</h1>
+    <h2 class="text-danger">حدث خطأ أثناء معالجة طلبك.</h2>
+
+    @if (ViewData["RequestId"] != null)
+    {
+        <p>
+            <strong>معرف الطلب:</strong> <code>@ViewData["RequestId"]</code>
+        </p>
+    }
+
+    <p>
+        <a asp-controller="Home" asp-action="Index">العودة إلى الصفحة الرئيسية</a>
+    </p>
+</div>

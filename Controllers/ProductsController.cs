@@ -25,6 +25,7 @@ public class ProductsController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Edit(Product product)
     {
         if (!ModelState.IsValid) return View(product);
@@ -40,6 +41,8 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {
         var product = _products.FirstOrDefault(p => p.Id == id);
