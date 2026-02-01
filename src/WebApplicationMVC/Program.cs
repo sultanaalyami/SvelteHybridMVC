@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplicationMVC.Data;
-using SvelteHybrid.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,9 +33,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// ?? Add SvelteHybrid - ONE LINE for reactive components!
-app.UseSvelteHybrid();
-
+// 🚀 Add SvelteHybrid - ONE LINE for reactive components!
+ 
 app.MapStaticAssets();
 
 app.MapControllerRoute(

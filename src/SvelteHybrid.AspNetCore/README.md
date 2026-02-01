@@ -1,10 +1,7 @@
-# SvelteHybrid.AspNetCore v2.0
+# SvelteHybrid.AspNetCore v3.0
 
-**Zero-config Svelte integration for ASP.NET Core**
+Auto-magic Svelte integration for ASP.NET Core.
 
-## Quick Start
-```csharp
-app.UseSvelteHybrid();
-```
+Install, Build, Done!
 
-Thats it! See full docs at https://github.com/sultanaalyami/SvelteHybridMVC
+Visit /SvelteHybrid/Demo after build.

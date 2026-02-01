@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <PackageId>SvelteHybrid.AspNetCore</PackageId>
+    <Version>3.0.0</Version>
+    <Authors>SvelteHybrid Team</Authors>
+    <Description>
+Auto-magic Svelte integration for ASP.NET Core.
+Install ? Build ? Done! No code required.
+Automatically generates reactive pages, components, and APIs.
+    </Description>
+    <PackageTags>svelte;aspnetcore;mvc;razor;spa;reactive;auto-generate;zero-config</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sultanaalyami/SvelteHybridMVC</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <!-- Package content -->
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="build\**\*" Pack="true" PackagePath="build\" />
+    <None Include="buildTransitive\**\*" Pack="true" PackagePath="buildTransitive\" />
+    <Content Include="Templates\**\*" Pack="true" PackagePath="contentFiles\any\any\SvelteHybrid\Templates\" CopyToOutput="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" Condition="'$(TargetFramework)' == 'net9.0'" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.0" Condition="'$(TargetFramework)' == 'net10.0'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
+    <EmbeddedResource Include="Templates\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Templates\Controllers\SvelteHybridApiController.cs.txt" />
+    <Content Remove="Templates\Controllers\SvelteHybridController.cs.txt" />
+    <Content Remove="Templates\Views\Shared\_SvelteHybridScripts.cshtml" />
+    <Content Remove="Templates\Views\SvelteHybrid\Demo.cshtml" />
+    <Content Remove="Templates\wwwroot\css\svelte-hybrid.css" />
+    <Content Remove="Templates\wwwroot\js\svelte-hybrid.js" />
+  </ItemGroup>
+
+</Project>

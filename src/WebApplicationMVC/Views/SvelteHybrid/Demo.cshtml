@@ -1,0 +1,234 @@
+@{
+    ViewData["Title"] = "SvelteHybrid Demo";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4">?? SvelteHybrid Demo</h1>
+        <p class="lead text-muted">Reactive components without page reload - Zero configuration!</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Counter -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">? Reactive Counter</div>
+                <div class="s-card-body" s-reactive s-data="{ count: 0 }">
+                    <div class="display-1 text-center mb-3">{count}</div>
+                    <div class="s-flex s-gap-2 s-justify-center">
+                        <button class="s-btn s-btn-primary" s-click="count++">+ Add</button>
+                        <button class="s-btn s-btn-outline" s-click="count--">- Subtract</button>
+                        <button class="s-btn s-btn-danger" s-click="count = 0">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-way Binding -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Two-Way Binding</div>
+                <div class="s-card-body" s-reactive s-data="{ name: '', message: '' }">
+                    <div class="mb-3">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="s-input" s-model="name" placeholder="Type your name...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="s-input" s-model="message" rows="2" placeholder="Write something..."></textarea>
+                    </div>
+                    <div class="alert alert-info" s-show="name || message">
+                        <strong s-if="name">Hello, {name}!</strong>
+                        <p s-if="message" class="mb-0 mt-1">{message}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Todo List -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Dynamic Todo List</div>
+                <div class="s-card-body" s-reactive s-data="{ todos: [{text:'Learn SvelteHybrid', done:false}], newTodo: '' }">
+                    <div class="s-flex s-gap-2 s-mb-4">
+                        <input type="text" class="s-input" s-model="newTodo" 
+                               placeholder="Add todo..." 
+                               s-enter="if(newTodo.trim()) { todos.push({text:newTodo, done:false}); newTodo=''; }">
+                        <button class="s-btn s-btn-success" 
+                                s-click="if(newTodo.trim()) { todos.push({text:newTodo, done:false}); newTodo=''; }"
+                                s-disabled="!newTodo.trim()">Add</button>
+                    </div>
+                    <ul class="list-group">
+                        <template s-for="todo in todos">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span style="text-decoration: todo.done ? 'line-through' : 'none'">{todo.text}</span>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-success me-1" 
+                                            onclick="this.closest('[s-reactive]').__svelteState.todos.find(t=>t.text==='{todo.text}').done = !this.closest('[s-reactive]').__svelteState.todos.find(t=>t.text==='{todo.text}').done">?</button>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                    <p class="s-text-muted s-mt-2" s-if="todos.length === 0">No todos yet!</p>
+                    <p class="s-text-muted s-mt-2" s-if="todos.length > 0">
+                        {todos.filter(t => !t.done).length} remaining
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conditional Tabs -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Conditional Rendering & Tabs</div>
+                <div class="s-card-body" s-reactive s-data="{ activeTab: 'home' }">
+                    <div class="s-flex s-gap-2 s-mb-4">
+                        <button class="s-btn" 
+                                s-class="{ 's-btn-primary': activeTab === 'home', 's-btn-outline': activeTab !== 'home' }"
+                                s-click="activeTab = 'home'">?? Home</button>
+                        <button class="s-btn"
+                                s-class="{ 's-btn-primary': activeTab === 'profile', 's-btn-outline': activeTab !== 'profile' }"
+                                s-click="activeTab = 'profile'">?? Profile</button>
+                        <button class="s-btn"
+                                s-class="{ 's-btn-primary': activeTab === 'settings', 's-btn-outline': activeTab !== 'settings' }"
+                                s-click="activeTab = 'settings'">?? Settings</button>
+                    </div>
+                    
+                    <div class="p-3 bg-light rounded" s-if="activeTab === 'home'">
+                        <h5>Welcome Home!</h5>
+                        <p class="mb-0">This is the home tab content.</p>
+                    </div>
+                    <div class="p-3 bg-light rounded" s-if="activeTab === 'profile'">
+                        <h5>Your Profile</h5>
+                        <p class="mb-0">Manage your profile settings here.</p>
+                    </div>
+                    <div class="p-3 bg-light rounded" s-if="activeTab === 'settings'">
+                        <h5>Settings</h5>
+                        <p class="mb-0">Configure your preferences.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Toast Notifications</div>
+                <div class="s-card-body" s-reactive>
+                    <p class="mb-3">Click buttons to show toast notifications:</p>
+                    <div class="s-flex s-gap-2 flex-wrap">
+                        <button class="s-btn s-btn-success" s-click="$toast.success('Operation completed successfully!')">Success</button>
+                        <button class="s-btn s-btn-danger" s-click="$toast.error('Something went wrong!')">Error</button>
+                        <button class="s-btn" style="background:#f59e0b;color:white" s-click="$toast.warning('Please be careful!')">Warning</button>
+                        <button class="s-btn" style="background:#3b82f6;color:white" s-click="$toast.info('Here is some information.')">Info</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading States -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">? Loading States</div>
+                <div class="s-card-body" s-reactive s-data="{ loading: false, result: null }">
+                    <button class="s-btn s-btn-primary" 
+                            s-click="loading = true; result = null; setTimeout(() => { result = 'Data loaded at ' + new Date().toLocaleTimeString(); loading = false; }, 2000)"
+                            s-disabled="loading">
+                        <span class="s-loading s-loading-sm" s-show="loading"></span>
+                        <span s-if="loading">Loading...</span>
+                        <span s-else>Fetch Data</span>
+                    </button>
+                    
+                    <div class="alert alert-success mt-3" s-if="result">
+                        {result}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Integration Example -->
+        <div class="col-12">
+            <div class="s-card">
+                <div class="s-card-header">?? API Integration</div>
+                <div class="s-card-body" s-reactive s-data="{ users: [], loading: false }">
+                    <button class="s-btn s-btn-primary" 
+                            s-click="loading = true; users = await $get('https://jsonplaceholder.typicode.com/users'); loading = false; $toast.success('Loaded ' + users.length + ' users!')"
+                            s-disabled="loading">
+                        <span class="s-loading s-loading-sm" s-show="loading"></span>
+                        Load Users from API
+                    </button>
+                    
+                    <div class="table-responsive mt-3" s-show="users.length > 0">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Company</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template s-for="user in users">
+                                    <tr>
+                                        <td>{user.id}</td>
+                                        <td>{user.name}</td>
+                                        <td>{user.email}</td>
+                                        <td>{user.company.name}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Example -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Modal Dialog</div>
+                <div class="s-card-body" s-reactive>
+                    <button class="s-btn s-btn-primary" s-click="$modal.open('demo-modal')">
+                        Open Modal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Example -->
+        <div class="col-md-6">
+            <div class="s-card">
+                <div class="s-card-header">?? Form Handling</div>
+                <div class="s-card-body" s-reactive s-data="{ submitted: false, formData: null }">
+                    <form s-submit="submitted = true; formData = $form; $toast.success('Form submitted!')">
+                        <div class="mb-3">
+                            <input type="text" name="name" class="s-input" placeholder="Your name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" name="email" class="s-input" placeholder="Your email" required>
+                        </div>
+                        <button type="submit" class="s-btn s-btn-primary">Submit</button>
+                    </form>
+                    
+                    <div class="alert alert-info mt-3" s-if="submitted">
+                        <strong>Submitted:</strong>
+                        <pre class="mb-0 mt-2">{JSON.stringify(formData, null, 2)}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div s-modal="demo-modal">
+    <div>
+        <h4>?? Modal Dialog</h4>
+        <p>This is a modal dialog. Click outside or the button below to close.</p>
+        <div class="s-flex s-justify-between s-mt-4">
+            <button class="s-btn s-btn-outline" s-click="$modal.close('demo-modal')">Cancel</button>
+            <button class="s-btn s-btn-primary" s-click="$toast.success('Confirmed!'); $modal.close('demo-modal')">Confirm</button>
+        </div>
+    </div>
+</div>

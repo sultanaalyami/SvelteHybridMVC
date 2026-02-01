@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <!-- Transitive targets for projects referencing this package -->
   <Import Project="$(MSBuildThisFileDirectory)..\build\SvelteHybrid.AspNetCore.targets" />
 </Project>

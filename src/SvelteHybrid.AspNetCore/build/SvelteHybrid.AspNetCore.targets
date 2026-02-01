@@ -1,19 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <!-- Auto-configure SvelteHybrid when package is installed -->
-  
+  <!-- 
+    SvelteHybrid Auto-Setup v3.0
+    Automatically configures the project on first build - NO CODE REQUIRED!
+  -->
+
   <PropertyGroup>
     <SvelteHybridInstalled>true</SvelteHybridInstalled>
+    <SvelteHybridAutoSetup Condition="'$(SvelteHybridAutoSetup)' == ''">true</SvelteHybridAutoSetup>
+    <SvelteHybridTemplatesPath>$(MSBuildThisFileDirectory)..\contentFiles\any\any\SvelteHybrid\Templates\</SvelteHybridTemplatesPath>
   </PropertyGroup>
 
-  <!-- Copy static assets to wwwroot on build -->
-  <Target Name="CopySvelteHybridAssets" AfterTargets="Build" Condition="'$(SvelteHybridCopyAssets)' != 'false'">
-    <Message Importance="high" Text="?? SvelteHybrid: Assets ready! Add app.UseSvelteHybrid(); to Program.cs" />
+  <!-- Run setup on first build BEFORE anything else -->
+  <Target Name="SvelteHybridSetup" 
+          BeforeTargets="BeforeBuild;Restore" 
+          Condition="'$(SvelteHybridAutoSetup)' == 'true' AND !Exists('$(ProjectDir)SvelteHybrid.generated')">
+    
+    <Message Importance="high" Text="[SvelteHybrid] Setting up your project automatically..." />
+    
+    <!-- Create directories -->
+    <MakeDir Directories="$(ProjectDir)Views\Shared" Condition="!Exists('$(ProjectDir)Views\Shared')" />
+    <MakeDir Directories="$(ProjectDir)Views\SvelteHybrid" Condition="!Exists('$(ProjectDir)Views\SvelteHybrid')" />
+    <MakeDir Directories="$(ProjectDir)wwwroot\js" Condition="!Exists('$(ProjectDir)wwwroot\js')" />
+    <MakeDir Directories="$(ProjectDir)wwwroot\css" Condition="!Exists('$(ProjectDir)wwwroot\css')" />
+    <MakeDir Directories="$(ProjectDir)Controllers" Condition="!Exists('$(ProjectDir)Controllers')" />
+    
+    <!-- Copy JS runtime -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)wwwroot\js\svelte-hybrid.js"
+          DestinationFiles="$(ProjectDir)wwwroot\js\svelte-hybrid.js"
+          Condition="Exists('$(SvelteHybridTemplatesPath)wwwroot\js\svelte-hybrid.js')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Copy CSS -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)wwwroot\css\svelte-hybrid.css"
+          DestinationFiles="$(ProjectDir)wwwroot\css\svelte-hybrid.css"
+          Condition="Exists('$(SvelteHybridTemplatesPath)wwwroot\css\svelte-hybrid.css')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Copy partial view -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)Views\Shared\_SvelteHybridScripts.cshtml"
+          DestinationFiles="$(ProjectDir)Views\Shared\_SvelteHybridScripts.cshtml"
+          Condition="Exists('$(SvelteHybridTemplatesPath)Views\Shared\_SvelteHybridScripts.cshtml')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Copy demo page -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)Views\SvelteHybrid\Demo.cshtml"
+          DestinationFiles="$(ProjectDir)Views\SvelteHybrid\Demo.cshtml"
+          Condition="Exists('$(SvelteHybridTemplatesPath)Views\SvelteHybrid\Demo.cshtml')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Copy controller -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)Controllers\SvelteHybridController.cs.txt"
+          DestinationFiles="$(ProjectDir)Controllers\SvelteHybridController.cs"
+          Condition="Exists('$(SvelteHybridTemplatesPath)Controllers\SvelteHybridController.cs.txt')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Copy API controller -->
+    <Copy SourceFiles="$(SvelteHybridTemplatesPath)Controllers\SvelteHybridApiController.cs.txt"
+          DestinationFiles="$(ProjectDir)Controllers\SvelteHybridApiController.cs"
+          Condition="Exists('$(SvelteHybridTemplatesPath)Controllers\SvelteHybridApiController.cs.txt')"
+          SkipUnchangedFiles="true" />
+    
+    <!-- Auto-inject into _Layout.cshtml using PowerShell -->
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$layoutPath = '$(ProjectDir)Views\Shared\_Layout.cshtml'; if (Test-Path $layoutPath) { $content = Get-Content $layoutPath -Raw; if (-not $content.Contains('_SvelteHybridScripts')) { $inject = '@await Html.PartialAsync(\&quot;_SvelteHybridScripts\&quot;)'; $content = $content -replace '(&lt;/body&gt;)', ($inject + [char]10 + '&lt;/body&gt;'); Set-Content $layoutPath $content -NoNewline; Write-Host '[SvelteHybrid] Layout auto-updated!' } }&quot;"
+          IgnoreExitCode="true"
+          StandardOutputImportance="high" />
+    
+    <!-- Create marker file LAST -->
+    <WriteLinesToFile File="$(ProjectDir)SvelteHybrid.generated" 
+                      Lines="SvelteHybrid v3.0 - Auto-configured on $([System.DateTime]::Now.ToString('yyyy-MM-dd HH:mm:ss'))" 
+                      Overwrite="true" />
+    
+    <Message Importance="high" Text="[SvelteHybrid] Setup complete! Visit /SvelteHybrid/Demo" />
   </Target>
 
-  <!-- Add tag helper reference -->
-  <ItemGroup>
-    <SvelteHybridTagHelperAssembly Include="SvelteHybrid.AspNetCore" />
-  </ItemGroup>
+  <!-- Show instructions after build -->
+  <Target Name="SvelteHybridInstructions" AfterTargets="Build">
+    <Message Importance="high" Text="========================================================" />
+    <Message Importance="high" Text="  SvelteHybrid Ready! Demo: /SvelteHybrid/Demo" />
+    <Message Importance="high" Text="========================================================" />
+  </Target>
 
 </Project>
