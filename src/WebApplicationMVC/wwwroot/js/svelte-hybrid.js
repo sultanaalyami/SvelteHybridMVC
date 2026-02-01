@@ -1,98 +1,56 @@
 /**
  * SvelteHybrid Runtime v3.0
- * Auto-generated reactive framework for ASP.NET Core
- * Zero-config - Works instantly!
+ * Reactive framework for ASP.NET Core
  */
 (function() {
     'use strict';
 
     const VERSION = '3.0.0';
     
-    const SvelteHybrid = {
+    window.SvelteHybrid = {
         version: VERSION,
         state: new Map(),
-        components: new Map(),
         
-        // Global helpers
-        $: {
-            get: async (url) => (await fetch(url)).json(),
-            post: async (url, data) => (await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]')?.value || '' },
-                body: JSON.stringify(data)
-            })).json(),
-            put: async (url, data) => (await fetch(url, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]')?.value || '' },
-                body: JSON.stringify(data)
-            })).json(),
-            delete: async (url) => (await fetch(url, { method: 'DELETE', headers: { 'RequestVerificationToken': document.querySelector('[name="__RequestVerificationToken"]')?.value || '' } })).ok,
-            toast: {
-                show: (msg, type = 'info') => SvelteHybrid.toast(msg, type),
-                success: (msg) => SvelteHybrid.toast(msg, 'success'),
-                error: (msg) => SvelteHybrid.toast(msg, 'error'),
-                warning: (msg) => SvelteHybrid.toast(msg, 'warning'),
-                info: (msg) => SvelteHybrid.toast(msg, 'info')
-            },
-            modal: {
-                open: (id) => document.querySelector(`[s-modal="${id}"]`)?.classList.add('s-modal-open'),
-                close: (id) => document.querySelector(`[s-modal="${id}"]`)?.classList.remove('s-modal-open')
-            },
-            navigate: (url) => { window.location.href = url; },
-            reload: () => { window.location.reload(); },
-            copy: async (text) => { await navigator.clipboard.writeText(text); SvelteHybrid.toast('Copied!', 'success'); }
-        },
-
         /**
          * Initialize all reactive elements
          */
-        init() {
-            document.querySelectorAll('[s-reactive]').forEach(el => this.initReactive(el));
+        init: function() {
+            var self = this;
+            document.querySelectorAll('[s-reactive]').forEach(function(el) {
+                self.initReactive(el);
+            });
             this.initToastContainer();
-            this.initModals();
-            this.initTabs();
-            this.observeDOM();
-            console.log(`?? SvelteHybrid v${VERSION} ready!`);
+            console.log('SvelteHybrid v' + VERSION + ' ready!');
         },
 
         /**
          * Initialize reactive container
          */
-        initReactive(container) {
-            const id = container.id || `s${Date.now()}${Math.random().toString(36).substr(2, 5)}`;
+        initReactive: function(container) {
+            var self = this;
+            var id = container.id || 's' + Date.now() + Math.random().toString(36).substr(2, 5);
             container.id = id;
 
-            // Parse state
-            let state = {};
-            const dataAttr = container.getAttribute('s-data');
+            // Parse initial state
+            var state = {};
+            var dataAttr = container.getAttribute('s-data');
             if (dataAttr) {
-                try { state = new Function(`return (${dataAttr})`)(); } catch(e) { console.error('s-data error:', e); }
+                try { 
+                    state = (new Function('return (' + dataAttr + ')'))(); 
+                } catch(e) { 
+                    console.error('s-data error:', e); 
+                }
             }
 
             // Create reactive proxy
-            const proxy = this.reactive(state, () => this.render(container));
+            var proxy = this.reactive(state, function() { 
+                self.render(container); 
+            });
             this.state.set(id, proxy);
+            container._state = proxy;
 
-            // Setup event handlers
+            // Setup events
             this.setupEvents(container, proxy);
-
-            // Run init expression
-            const initExpr = container.getAttribute('s-init');
-            if (initExpr) {
-                this.evalAsync(initExpr, proxy, container);
-            }
-
-            // Setup polling
-            const pollUrl = container.getAttribute('s-poll');
-            if (pollUrl) {
-                const interval = parseInt(container.getAttribute('s-interval')) || 5000;
-                setInterval(async () => {
-                    try {
-                        const data = await this.$.get(pollUrl);
-                        Object.assign(proxy, data);
-                    } catch(e) { console.error('Poll error:', e); }
-                }, interval);
-            }
 
             // Initial render
             this.render(container);
@@ -101,13 +59,16 @@
         /**
          * Create reactive proxy
          */
-        reactive(obj, onChange) {
-            const handler = {
-                get: (target, key) => {
-                    const val = target[key];
-                    return (typeof val === 'object' && val !== null) ? new Proxy(val, handler) : val;
+        reactive: function(obj, onChange) {
+            var handler = {
+                get: function(target, key) {
+                    var val = target[key];
+                    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+                        return new Proxy(val, handler);
+                    }
+                    return val;
                 },
-                set: (target, key, value) => {
+                set: function(target, key, value) {
                     target[key] = value;
                     onChange();
                     return true;
@@ -119,313 +80,202 @@
         /**
          * Setup event handlers
          */
-        setupEvents(container, state) {
-            // Click
-            container.querySelectorAll('[s-click]').forEach(el => {
-                el.addEventListener('click', async (e) => {
+        setupEvents: function(container, state) {
+            var self = this;
+
+            // s-click
+            container.querySelectorAll('[s-click]').forEach(function(el) {
+                var expr = el.getAttribute('s-click');
+                el.addEventListener('click', function(e) {
                     e.preventDefault();
-                    await this.evalAsync(el.getAttribute('s-click'), state, el);
+                    self.evalExpr(expr, state, container);
                 });
             });
 
-            // Submit
-            container.querySelectorAll('[s-submit]').forEach(el => {
-                el.addEventListener('submit', async (e) => {
+            // s-model
+            container.querySelectorAll('[s-model]').forEach(function(el) {
+                var key = el.getAttribute('s-model');
+                el._sModelKey = key;
+                
+                el.addEventListener('input', function() {
+                    var val = el.type === 'checkbox' ? el.checked : el.value;
+                    self.setPath(state, key, val);
+                });
+            });
+
+            // s-submit
+            container.querySelectorAll('form[s-submit]').forEach(function(el) {
+                var expr = el.getAttribute('s-submit');
+                el.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    const formData = Object.fromEntries(new FormData(el));
-                    await this.evalAsync(el.getAttribute('s-submit'), state, el, { $form: formData, $el: el });
+                    self.evalExpr(expr, state, container);
                 });
-            });
-
-            // Model (two-way binding)
-            container.querySelectorAll('[s-model]').forEach(el => {
-                const key = el.getAttribute('s-model');
-                el._sModel = key;
-                el.addEventListener('input', () => {
-                    const val = el.type === 'checkbox' ? el.checked : el.value;
-                    this.setPath(state, key, val);
-                });
-            });
-
-            // Change
-            container.querySelectorAll('[s-change]').forEach(el => {
-                el.addEventListener('change', async () => {
-                    await this.evalAsync(el.getAttribute('s-change'), state, el);
-                });
-            });
-
-            // Keyup / Enter
-            container.querySelectorAll('[s-keyup], [s-enter]').forEach(el => {
-                el.addEventListener('keyup', async (e) => {
-                    if (el.hasAttribute('s-enter') && e.key === 'Enter') {
-                        await this.evalAsync(el.getAttribute('s-enter'), state, el, { $event: e });
-                    } else if (el.hasAttribute('s-keyup')) {
-                        await this.evalAsync(el.getAttribute('s-keyup'), state, el, { $event: e, $key: e.key });
-                    }
-                });
-            });
-
-            // Focus/Blur
-            container.querySelectorAll('[s-focus]').forEach(el => {
-                el.addEventListener('focus', async () => await this.evalAsync(el.getAttribute('s-focus'), state, el));
-            });
-            container.querySelectorAll('[s-blur]').forEach(el => {
-                el.addEventListener('blur', async () => await this.evalAsync(el.getAttribute('s-blur'), state, el));
             });
         },
 
         /**
          * Render container
          */
-        render(container) {
-            const state = this.state.get(container.id);
+        render: function(container) {
+            var state = this.state.get(container.id);
             if (!state) return;
 
-            // Update interpolation {expr}
-            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-            const textNodes = [];
-            while (walker.nextNode()) textNodes.push(walker.currentNode);
-            
-            textNodes.forEach(node => {
-                const original = node._sOriginal || node.textContent;
-                if (!node._sOriginal && original.includes('{')) node._sOriginal = original;
-                if (node._sOriginal) {
-                    node.textContent = node._sOriginal.replace(/{([^}]+)}/g, (_, expr) => 
-                        this.evalSync(expr, state) ?? '');
-                }
-            });
-
-            // s-model
-            container.querySelectorAll('[s-model]').forEach(el => {
-                const key = el._sModel || el.getAttribute('s-model');
-                const val = this.getPath(state, key);
-                if (el.type === 'checkbox') el.checked = !!val;
-                else if (el.value !== (val ?? '')) el.value = val ?? '';
-            });
+            var self = this;
 
             // s-text
-            container.querySelectorAll('[s-text]').forEach(el => {
-                el.textContent = this.evalSync(el.getAttribute('s-text'), state) ?? '';
+            container.querySelectorAll('[s-text]').forEach(function(el) {
+                var expr = el.getAttribute('s-text');
+                var val = self.evalExprSync(expr, state);
+                el.textContent = val !== undefined && val !== null ? val : '';
             });
 
-            // s-html
-            container.querySelectorAll('[s-html]').forEach(el => {
-                el.innerHTML = this.evalSync(el.getAttribute('s-html'), state) ?? '';
-            });
-
-            // s-if / s-else
-            container.querySelectorAll('[s-if]').forEach(el => {
-                const show = !!this.evalSync(el.getAttribute('s-if'), state);
-                el.style.display = show ? '' : 'none';
-                const next = el.nextElementSibling;
-                if (next?.hasAttribute('s-else')) next.style.display = show ? 'none' : '';
+            // s-model values
+            container.querySelectorAll('[s-model]').forEach(function(el) {
+                var key = el._sModelKey || el.getAttribute('s-model');
+                var val = self.getPath(state, key);
+                if (el.type === 'checkbox') {
+                    el.checked = !!val;
+                } else if (el.value !== (val || '')) {
+                    el.value = val || '';
+                }
             });
 
             // s-show
-            container.querySelectorAll('[s-show]').forEach(el => {
-                el.style.display = this.evalSync(el.getAttribute('s-show'), state) ? '' : 'none';
+            container.querySelectorAll('[s-show]').forEach(function(el) {
+                var expr = el.getAttribute('s-show');
+                var show = self.evalExprSync(expr, state);
+                el.style.display = show ? '' : 'none';
+            });
+
+            // s-if
+            container.querySelectorAll('[s-if]').forEach(function(el) {
+                var expr = el.getAttribute('s-if');
+                var show = self.evalExprSync(expr, state);
+                el.style.display = show ? '' : 'none';
             });
 
             // s-class
-            container.querySelectorAll('[s-class]').forEach(el => {
-                const classes = this.evalSync(el.getAttribute('s-class'), state);
+            container.querySelectorAll('[s-class]').forEach(function(el) {
+                var expr = el.getAttribute('s-class');
+                var classes = self.evalExprSync(expr, state);
                 if (typeof classes === 'object') {
-                    Object.entries(classes).forEach(([cls, active]) => el.classList.toggle(cls, !!active));
-                }
-            });
-
-            // s-style
-            container.querySelectorAll('[s-style]').forEach(el => {
-                const styles = this.evalSync(el.getAttribute('s-style'), state);
-                if (typeof styles === 'object') Object.assign(el.style, styles);
-            });
-
-            // s-disabled
-            container.querySelectorAll('[s-disabled]').forEach(el => {
-                el.disabled = !!this.evalSync(el.getAttribute('s-disabled'), state);
-            });
-
-            // s-attr
-            container.querySelectorAll('[s-attr]').forEach(el => {
-                const attrs = this.evalSync(el.getAttribute('s-attr'), state);
-                if (typeof attrs === 'object') {
-                    Object.entries(attrs).forEach(([name, val]) => {
-                        if (val === false || val == null) el.removeAttribute(name);
-                        else el.setAttribute(name, val === true ? '' : val);
+                    Object.keys(classes).forEach(function(cls) {
+                        el.classList.toggle(cls, !!classes[cls]);
                     });
                 }
             });
 
-            // s-for (template loops)
-            container.querySelectorAll('template[s-for]').forEach(tpl => {
-                const expr = tpl.getAttribute('s-for');
-                const match = expr.match(/(\w+)\s+in\s+(\w+)/);
-                if (!match) return;
-                
-                const [, itemName, arrayName] = match;
-                const array = state[arrayName] || [];
-                
-                // Remove old items
-                let sib = tpl.nextElementSibling;
-                while (sib?.hasAttribute('s-for-item')) {
-                    const next = sib.nextElementSibling;
-                    sib.remove();
-                    sib = next;
-                }
-                
-                // Create new items
-                array.forEach((item, idx) => {
-                    const clone = tpl.content.cloneNode(true);
-                    const wrapper = document.createElement('div');
-                    wrapper.innerHTML = clone.firstElementChild?.outerHTML || '';
-                    wrapper.innerHTML = wrapper.innerHTML
-                        .replace(new RegExp(`{${itemName}\\.([^}]+)}`, 'g'), (_, k) => item[k] ?? '')
-                        .replace(new RegExp(`{${itemName}}`, 'g'), typeof item === 'object' ? JSON.stringify(item) : item)
-                        .replace(/{index}/g, idx);
-                    
-                    const newEl = wrapper.firstElementChild;
-                    if (newEl) {
-                        newEl.setAttribute('s-for-item', '');
-                        tpl.parentNode.insertBefore(newEl, tpl.nextSibling);
-                    }
-                });
+            // s-disabled
+            container.querySelectorAll('[s-disabled]').forEach(function(el) {
+                var expr = el.getAttribute('s-disabled');
+                el.disabled = !!self.evalExprSync(expr, state);
             });
         },
 
         /**
          * Evaluate expression synchronously
          */
-        evalSync(expr, state) {
+        evalExprSync: function(expr, state) {
             try {
-                const fn = new Function(...Object.keys(state), ...Object.keys(this.$).map(k => '$' + k),
-                    `try { return (${expr}); } catch(e) { return undefined; }`);
-                return fn(...Object.values(state), ...Object.values(this.$));
-            } catch(e) { return undefined; }
+                var keys = Object.keys(state);
+                var values = Object.values(state);
+                var fn = new Function(keys.join(','), 'try { return (' + expr + '); } catch(e) { return undefined; }');
+                return fn.apply(null, values);
+            } catch(e) { 
+                return undefined; 
+            }
         },
 
         /**
-         * Evaluate expression asynchronously
+         * Evaluate expression (for actions)
          */
-        async evalAsync(expr, state, el, extra = {}) {
+        evalExpr: function(expr, state, container) {
             try {
-                const allVars = { ...state, ...Object.fromEntries(Object.entries(this.$).map(([k,v]) => ['$'+k, v])), ...extra, $el: el };
-                const fn = new Function(...Object.keys(allVars), `return (async () => { ${expr} })()`);
-                return await fn(...Object.values(allVars));
-            } catch(e) { console.error('Eval error:', e); }
+                var keys = Object.keys(state);
+                var values = keys.map(function(k) { return state[k]; });
+                var fn = new Function(keys.join(','), expr + '; return {' + keys.map(function(k) { return k + ':' + k; }).join(',') + '};');
+                var result = fn.apply(null, values);
+                
+                // Update state
+                keys.forEach(function(k) {
+                    if (result[k] !== state[k]) {
+                        state[k] = result[k];
+                    }
+                });
+            } catch(e) { 
+                console.error('Expression error:', e); 
+            }
         },
 
         /**
          * Get nested path value
          */
-        getPath(obj, path) {
-            return path.split('.').reduce((o, k) => o?.[k], obj);
+        getPath: function(obj, path) {
+            return path.split('.').reduce(function(o, k) { return o ? o[k] : undefined; }, obj);
         },
 
         /**
          * Set nested path value
          */
-        setPath(obj, path, value) {
-            const keys = path.split('.');
-            const last = keys.pop();
-            const target = keys.reduce((o, k) => o[k] = o[k] || {}, obj);
+        setPath: function(obj, path, value) {
+            var keys = path.split('.');
+            var last = keys.pop();
+            var target = keys.reduce(function(o, k) { return o[k] = o[k] || {}; }, obj);
             target[last] = value;
         },
 
         /**
          * Toast notification
          */
-        toast(message, type = 'info') {
-            const container = document.querySelector('.s-toast-container');
-            if (!container) return;
+        toast: function(message, type) {
+            type = type || 'info';
+            var container = document.querySelector('.s-toast-container');
+            if (!container) {
+                this.initToastContainer();
+                container = document.querySelector('.s-toast-container');
+            }
             
-            const toast = document.createElement('div');
-            toast.className = `s-toast s-toast-${type}`;
-            toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">×</button>`;
+            var toast = document.createElement('div');
+            toast.className = 's-toast s-toast-' + type;
+            toast.innerHTML = '<span>' + message + '</span><button onclick="this.parentElement.remove()">&times;</button>';
             container.appendChild(toast);
             
-            requestAnimationFrame(() => toast.classList.add('s-show'));
-            setTimeout(() => {
+            setTimeout(function() { toast.classList.add('s-show'); }, 10);
+            setTimeout(function() {
                 toast.classList.remove('s-show');
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(function() { toast.remove(); }, 300);
             }, 4000);
         },
 
         /**
          * Initialize toast container
          */
-        initToastContainer() {
+        initToastContainer: function() {
             if (!document.querySelector('.s-toast-container')) {
-                const container = document.createElement('div');
+                var container = document.createElement('div');
                 container.className = 's-toast-container';
                 document.body.appendChild(container);
             }
         },
 
         /**
-         * Initialize modals
+         * Get state by container ID
          */
-        initModals() {
-            document.querySelectorAll('[s-modal]').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) modal.classList.remove('s-modal-open');
-                });
-            });
-        },
-
-        /**
-         * Initialize tabs
-         */
-        initTabs() {
-            document.querySelectorAll('.s-tabs').forEach(tabs => {
-                const btns = tabs.querySelectorAll('.s-tab-btn');
-                const panels = tabs.querySelectorAll('.s-tab-panel');
-                
-                btns.forEach((btn, i) => {
-                    btn.addEventListener('click', () => {
-                        btns.forEach((b, j) => b.classList.toggle('active', i === j));
-                        panels.forEach((p, j) => p.style.display = i === j ? '' : 'none');
-                    });
-                });
-            });
-        },
-
-        /**
-         * Observe DOM for dynamic content
-         */
-        observeDOM() {
-            const observer = new MutationObserver(mutations => {
-                mutations.forEach(m => {
-                    m.addedNodes.forEach(node => {
-                        if (node.nodeType === 1) {
-                            if (node.hasAttribute?.('s-reactive') && !this.state.has(node.id)) {
-                                this.initReactive(node);
-                            }
-                            node.querySelectorAll?.('[s-reactive]').forEach(el => {
-                                if (!this.state.has(el.id)) this.initReactive(el);
-                            });
-                        }
-                    });
-                });
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        },
-
-        /**
-         * Public API
-         */
-        getState: (id) => SvelteHybrid.state.get(id),
-        setState: (id, data) => { const s = SvelteHybrid.state.get(id); if(s) Object.assign(s, data); },
-        refresh: (id) => { const el = document.getElementById(id); if(el) SvelteHybrid.render(el); }
+        getState: function(id) {
+            return this.state.get(id);
+        }
     };
 
-    // Auto-init
+    // Alias
+    window.$s = window.SvelteHybrid;
+
+    // Auto-init on DOM ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => SvelteHybrid.init());
+        document.addEventListener('DOMContentLoaded', function() { 
+            SvelteHybrid.init(); 
+        });
     } else {
         SvelteHybrid.init();
     }
 
-    // Export
-    window.SvelteHybrid = SvelteHybrid;
-    window.$s = SvelteHybrid;
 })();

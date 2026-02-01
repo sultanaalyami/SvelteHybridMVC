@@ -37,8 +37,4 @@ Automatically generates reactive pages, components, and APIs.
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="build\" />
-  </ItemGroup>
-
 </Project>
