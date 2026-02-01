@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">🚀 SvelteHybrid Demo</h1>
+    <p>Reactive components without page reload!</p>
+</div>
+
+<!-- ===== COUNTER DEMO ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>⚡ Counter (No Page Reload!)</h5>
+    </div>
+    <div class="card-body" s-reactive s-data="{ count: 0 }">
+        <p class="display-4">{count}</p>
+        <button class="btn btn-primary me-2" s-click="count++">+ Increment</button>
+        <button class="btn btn-secondary me-2" s-click="count--">- Decrement</button>
+        <button class="btn btn-outline-danger" s-click="count = 0">Reset</button>
+    </div>
+</div>
+
+<!-- ===== TWO-WAY BINDING ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>🔗 Two-Way Binding</h5>
+    </div>
+    <div class="card-body" s-reactive s-data="{ name: '', email: '' }">
+        <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-control" s-model="name" placeholder="Type your name...">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Your Email</label>
+            <input type="email" class="form-control" s-model="email" placeholder="Type your email...">
+        </div>
+        <div class="alert alert-info" s-show="name || email">
+            <strong>Live Preview:</strong> Hello <strong>{name}</strong>
+            <span s-if="email"> ({email})</span>!
+        </div>
+    </div>
+</div>
+
+<!-- ===== TODO LIST ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>📝 Todo List (Dynamic)</h5>
+    </div>
+    <div class="card-body" s-reactive s-data="{ todos: [], newTodo: '' }">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" s-model="newTodo" 
+                   placeholder="Add a todo..." 
+                   s-keyup="if($key === 'Enter' && newTodo) { todos.push({text: newTodo, done: false}); newTodo = ''; }">
+            <button class="btn btn-success" 
+                    s-click="if(newTodo) { todos.push({text: newTodo, done: false}); newTodo = ''; }"
+                    s-disabled="!newTodo">
+                Add
+            </button>
+        </div>
+        <ul class="list-group">
+            <template s-for="todo in todos">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span s-class="{ 'text-decoration-line-through text-muted': todo.done }">{todo.text}</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-success me-1" s-click="todo.done = !todo.done">
+                            ✓
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" s-click="todos = todos.filter(t => t !== todo)">
+                            ✕
+                        </button>
+                    </div>
+                </li>
+            </template>
+        </ul>
+        <p class="text-muted mt-2" s-if="todos.length === 0">No todos yet. Add one above!</p>
+        <p class="text-muted mt-2" s-if="todos.length > 0">
+            {todos.filter(t => !t.done).length} remaining / {todos.length} total
+        </p>
+    </div>
+</div>
+
+<!-- ===== CONDITIONAL RENDERING ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>🎭 Conditional Rendering</h5>
+    </div>
+    <div class="card-body" s-reactive s-data="{ tab: 'home' }">
+        <div class="btn-group mb-3">
+            <button class="btn" s-class="{ 'btn-primary': tab === 'home', 'btn-outline-primary': tab !== 'home' }" 
+                    s-click="tab = 'home'">Home</button>
+            <button class="btn" s-class="{ 'btn-primary': tab === 'profile', 'btn-outline-primary': tab !== 'profile' }" 
+                    s-click="tab = 'profile'">Profile</button>
+            <button class="btn" s-class="{ 'btn-primary': tab === 'settings', 'btn-outline-primary': tab !== 'settings' }" 
+                    s-click="tab = 'settings'">Settings</button>
+        </div>
+        
+        <div class="p-3 bg-light rounded" s-if="tab === 'home'">
+            <h4>🏠 Home</h4>
+            <p>Welcome to the home tab!</p>
+        </div>
+        <div class="p-3 bg-light rounded" s-if="tab === 'profile'">
+            <h4>👤 Profile</h4>
+            <p>This is your profile section.</p>
+        </div>
+        <div class="p-3 bg-light rounded" s-if="tab === 'settings'">
+            <h4>⚙️ Settings</h4>
+            <p>Configure your preferences here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST NOTIFICATIONS ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>🔔 Toast Notifications</h5>
+    </div>
+    <div class="card-body" s-reactive>
+        <button class="btn btn-success me-2" s-click="$toast.success('Operation successful!')">Success</button>
+        <button class="btn btn-danger me-2" s-click="$toast.error('Something went wrong!')">Error</button>
+        <button class="btn btn-warning me-2" s-click="$toast.warning('Please be careful!')">Warning</button>
+        <button class="btn btn-info" s-click="$toast.info('Here is some information.')">Info</button>
+    </div>
+</div>
+
+<!-- ===== LOADING STATE ===== -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>⏳ Loading States</h5>
+    </div>
+    <div class="card-body" s-reactive s-data="{ loading: false, data: null }">
+        <button class="btn btn-primary" 
+                s-click="loading = true; data = null; setTimeout(() => { data = 'Data loaded at ' + new Date().toLocaleTimeString(); loading = false; }, 2000)"
+                s-disabled="loading">
+            <span s-if="loading">
+                <s-loading size="sm"></s-loading> Loading...
+            </span>
+            <span s-else>Fetch Data</span>
+        </button>
+        
+        <div class="mt-3" s-if="data">
+            <div class="alert alert-success">{data}</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .card-header h5 { margin: 0; }
+</style>
+

@@ -1,22 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <!-- Package Metadata -->
+    <!-- Package Identity -->
     <PackageId>SvelteHybrid.AspNetCore</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>HRCE Team</Authors>
+    <Version>2.0.0</Version>
+    <Authors>SvelteHybrid Team</Authors>
     <Company>SvelteHybrid</Company>
     <Product>SvelteHybrid for ASP.NET Core</Product>
     <Description>
-      Professional library for integrating Svelte components with ASP.NET Core MVC and Razor Pages.
-      Features include Server-Side Rendering (SSR), component isolation, authorization policies,
-      and seamless hydration for interactive Svelte components within Razor views.
+Zero-config Svelte integration for ASP.NET Core. 
+Drop-in reactive components that work instantly - no Node.js required!
+Transform your MVC/Razor Pages into modern SPAs with a single line of code.
     </Description>
-    <PackageTags>svelte;aspnetcore;mvc;razor;ssr;hybrid;components;spa;frontend</PackageTags>
+    <PackageTags>svelte;aspnetcore;mvc;razor;spa;reactive;components;no-reload;real-time</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sultanaalyami/SvelteHybridMVC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sultanaalyami/SvelteHybridMVC</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     
     <!-- Build Configuration -->
@@ -24,31 +23,41 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
     <!-- Package Generation -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     
-    <!-- Assembly Info -->
-    <AssemblyName>SvelteHybrid.AspNetCore</AssemblyName>
-    <RootNamespace>SvelteHybrid.AspNetCore</RootNamespace>
-    <Copyright>Copyright © 2025 SvelteHybrid Team</Copyright>
+    <!-- Embed static assets as manifest resources -->
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
+  <!-- Package Files -->
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="build\**\*" Pack="true" PackagePath="build\" />
+    <None Include="buildTransitive\**\*" Pack="true" PackagePath="buildTransitive\" />
   </ItemGroup>
 
+  <!-- Framework Reference -->
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-  <!-- Content Files for Templates -->
+  
+  <!-- Embedded file provider -->
   <ItemGroup>
-    <Content Include="content\**\*" Pack="true" PackagePath="contentFiles\any\any\SvelteHybrid\" />
-    <Content Include="build\**\*" Pack="true" PackagePath="build\" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" Condition="'$(TargetFramework)' == 'net9.0'" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.0" Condition="'$(TargetFramework)' == 'net10.0'" />
+  </ItemGroup>
+
+  <!-- Embedded wwwroot -->
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
   </ItemGroup>
 
 </Project>

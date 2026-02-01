@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="HRCE.csproj" />
   <Project Path="src/SvelteHybrid.AspNetCore/SvelteHybrid.AspNetCore.csproj" />
+  <Project Path="src/WebApplicationMVC/WebApplicationMVC.csproj" Id="ce027a26-bc74-4168-874f-fa306ee58b42" />
 </Solution>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Auto-configure SvelteHybrid when package is installed -->
+  
+  <PropertyGroup>
+    <SvelteHybridInstalled>true</SvelteHybridInstalled>
+  </PropertyGroup>
+
+  <!-- Copy static assets to wwwroot on build -->
+  <Target Name="CopySvelteHybridAssets" AfterTargets="Build" Condition="'$(SvelteHybridCopyAssets)' != 'false'">
+    <Message Importance="high" Text="?? SvelteHybrid: Assets ready! Add app.UseSvelteHybrid(); to Program.cs" />
+  </Target>
+
+  <!-- Add tag helper reference -->
+  <ItemGroup>
+    <SvelteHybridTagHelperAssembly Include="SvelteHybrid.AspNetCore" />
+  </ItemGroup>
+
+</Project>
