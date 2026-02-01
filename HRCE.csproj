@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-HRCE-4e719db5-a313-40b0-bb1d-33a488c18b04</UserSecretsId>
+    <RestorePackageSourceMappingEnabled>false</RestorePackageSourceMappingEnabled>
+    <RestoreConfigFile>$(MSBuildProjectDirectory)\NuGet.config</RestoreConfigFile>
+    <!-- تعطيل Docker مؤقتاً -->
+    <!-- <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS> -->
+    <!-- <DockerfileContext>.</DockerfileContext> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="src\SvelteHybrid.AspNetCore\**" />
+    <Content Remove="src\SvelteHybrid.AspNetCore\**" />
+    <EmbeddedResource Remove="src\SvelteHybrid.AspNetCore\**" />
+    <None Remove="src\SvelteHybrid.AspNetCore\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="tools\BuilderRepro\Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="tools\BuilderRepro\BuilderRepro.csproj" />
+    <None Include="tools\BuilderRepro\Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML" Version="4.0.0" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.1" />
+
+	  <!-- تعطيل أدوات Docker مؤقتاً -->
+    <!-- <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\" />
+  </ItemGroup>
+
+</Project>

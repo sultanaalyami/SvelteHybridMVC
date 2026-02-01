@@ -1,6 +1,6 @@
-using SvelteHybridMVC.Core;
+﻿using HRCE.Core;
 
-namespace SvelteHybridMVC.Infrastructure.Extensions;
+namespace HRCE.Infrastructure.Extensions;
 
 public static class SvelteServiceExtensions
 {

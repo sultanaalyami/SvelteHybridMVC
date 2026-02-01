@@ -1,4 +1,4 @@
-# API Interfaces Reference
+﻿# API Interfaces Reference
 
 This document provides detailed reference for all HRCE interfaces and types.
 
@@ -11,7 +11,7 @@ This document provides detailed reference for all HRCE interfaces and types.
 Main interface for rendering Svelte components on the server.
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public interface ISvelteRenderer
 {
@@ -50,7 +50,7 @@ var html = await _svelteRenderer.RenderAsync("_ProductCard", model);
 Interface for the hybrid view engine (future implementation).
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public interface IHybridViewEngine
 {
@@ -77,7 +77,7 @@ public interface IHybridViewEngine
 Generic interface for component renderers (extensibility point).
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public interface IComponentRenderer
 {
@@ -126,7 +126,7 @@ public class ReactRenderer : IComponentRenderer
 Configuration options for the Svelte renderer.
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public class SvelteOptions
 {
@@ -184,7 +184,7 @@ public class SvelteOptions
 Enum for controlling client-side hydration.
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public enum HydrationMode
 {
@@ -215,7 +215,7 @@ public enum HydrationMode
 ### Base Interfaces
 
 ```csharp
-namespace SvelteHybridMVC.Presentation;
+namespace HRCE.Presentation;
 
 /// <summary>
 /// Marker interface for presentation models.
@@ -257,7 +257,7 @@ public record ProductCardModel : ICacheablePresentationModel
 Attribute for component-level authorization (future implementation).
 
 ```csharp
-namespace SvelteHybridMVC.Core.Authorization;
+namespace HRCE.Core.Authorization;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class ComponentAuthorizeAttribute : Attribute
@@ -302,7 +302,7 @@ public record AdminDashboardModel : IPresentationModel
 Extension methods for registering HRCE services.
 
 ```csharp
-namespace SvelteHybridMVC.Infrastructure.Extensions;
+namespace HRCE.Infrastructure.Extensions;
 
 public static class SvelteServiceExtensions
 {
@@ -360,7 +360,7 @@ services.AddComponentRenderer<ReactRenderer>();
 Result type for component rendering operations.
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public class ComponentResult
 {
@@ -403,7 +403,7 @@ public class ComponentResult
 ### HRCE-Specific Exceptions
 
 ```csharp
-namespace SvelteHybridMVC.Core.Exceptions;
+namespace HRCE.Core.Exceptions;
 
 /// <summary>
 /// Base exception for all HRCE-related errors.
@@ -467,7 +467,7 @@ public class ComponentAuthorizationException : HRCEException
 ### HRCE Constants
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public static class HRCEConstants
 {
@@ -505,7 +505,7 @@ public static class HRCEConstants
 Common type aliases for convenience:
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 /// <summary>
 /// Function type for transforming models.
@@ -524,7 +524,7 @@ public delegate string? ComponentResolver(string componentName);
 ## Logging Categories
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public static class LogCategories
 {
@@ -551,7 +551,7 @@ _logger.LogInformation(
 ## Version Information
 
 ```csharp
-namespace SvelteHybridMVC.Core;
+namespace HRCE.Core;
 
 public static class HRCEVersion
 {

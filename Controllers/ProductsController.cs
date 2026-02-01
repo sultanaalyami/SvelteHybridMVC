@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using SvelteHybridMVC.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using HRCE.Models;
 
-namespace SvelteHybridMVC.Controllers;
+namespace HRCE.Controllers;
 
 public class ProductsController : Controller
 {
@@ -25,6 +25,7 @@ public class ProductsController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Edit(Product product)
     {
         if (!ModelState.IsValid) return View(product);

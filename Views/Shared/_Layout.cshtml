@@ -1,28 +1,41 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="نظام هجين يجمع بين ASP.NET MVC و Svelte" />
-    <title>@ViewData["Title"] - SvelteHybridMVC</title>
+    <title>@ViewData["Title"] - HRCE</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/hrce.ui.css" />
 </head>
-<body>
-    <header>
-        <nav class="navbar">
-            <a asp-controller="Home" asp-action="Index">🏠 الرئيسية</a>
-            <a asp-controller="Products" asp-action="Index">📦 المنتجات</a>
-        </nav>
-    </header>
+@inject HRCE.Services.UiRules.UiRuleEvaluator UiRules
 
-    <main class="container">
-        @RenderBody()
-    </main>
+@{
+    var layoutDecision = await UiRules.GetLayoutDecisionAsync(Context, Context.RequestAborted);
+    var layoutClass = $"hrce-layout-{layoutDecision.LayoutKey}";
+}
 
-    <footer>
-        <p>&copy; @DateTime.Now.Year - <strong>SvelteHybridMVC</strong> | نظام هجين ASP.NET + Svelte</p>
-    </footer>
+<body class="@layoutClass">
+    <div class="hrce-ui">
+        <div class="hrce-app">
+            <header class="hrce-header">
+                @await Component.InvokeAsync("NavigationMenu")
+            </header>
 
+            <main class="hrce-main">
+                <section class="hrce-surface hrce-stack">
+                    @RenderSection("PageHeader", required: false)
+                    @RenderBody()
+                </section>
+            </main>
+
+            <footer class="hrce-footer">
+                <p>&copy; @DateTime.Now.Year - <strong>HRCE</strong> | Hybrid Razor + Svelte Runtime</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/js/nlogjs.js" defer></script>
     <script src="~/_svelte/client.js" type="module" defer></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

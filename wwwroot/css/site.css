@@ -1,4 +1,4 @@
-/* site.css - SvelteHybridMVC Styles (Bootstrap-like) */
+﻿/* site.css - HRCE Styles (Bootstrap-like) */
 :root {
     --primary: #0d6efd;
     --primary-hover: #0b5ed7;
@@ -60,7 +60,7 @@ header {
 }
 
 .navbar::before {
-    content: "SvelteHybridMVC";
+    content: "HRCE";
     color: var(--white);
     font-size: 1.25rem;
     font-weight: 600;

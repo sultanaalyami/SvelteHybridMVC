@@ -1,0 +1,101 @@
+@{
+    ViewData["Title"] = "Builder";
+}
+
+<section class="hrce-stack">
+    <header class="hrce-stack">
+        <h1>„’„„ ’›Õ«  HRCE</h1>
+        <p class="hrce-muted">Ê«ÃÂ…  ÿÊÌ— –ﬂÌ… ·»‰«¡ ’›Õ«  MVC ÊﬁÊ«⁄œ «· ‰ﬁ· œÊ‰ „€«œ—… «·„ ’›Õ.</p>
+    </header>
+
+    <div class="hrce-grid hrce-grid--two">
+        <div class="hrce-surface">
+            <h3>≈‰‘«¡ ’›Õ… ÃœÌœ…</h3>
+            <form id="page-form" class="hrce-stack">
+                @Html.AntiForgeryToken()
+                <label>
+                    <span>«·«”„</span>
+                    <input class="hrce-input" name="name" placeholder="Dashboard" required />
+                </label>
+                <label>
+                    <span>«·⁄‰Ê«‰</span>
+                    <input class="hrce-input" name="title" placeholder="·ÊÕ… «· Õﬂ„" />
+                </label>
+                <label>
+                    <span>«·œÊ— («Œ Ì«—Ì)</span>
+                    <input class="hrce-input" name="role" placeholder="Administrator" />
+                </label>
+                <label>
+                    <span>”Ì«”… («Œ Ì«—Ì)</span>
+                    <input class="hrce-input" name="policy" placeholder="RequireManagers" />
+                </label>
+                <label>
+                    <span> ÕœÌÀ  ·ﬁ«∆Ì »⁄œ «·≈‰‘«¡</span>
+                    <select class="hrce-input" name="autoRefresh">
+                        <option value="true">‰⁄„</option>
+                        <option value="false">·«</option>
+                    </select>
+                </label>
+                <button class="btn btn-primary" type="submit">≈‰‘«¡</button>
+            </form>
+            <div id="page-result" class="hrce-muted"></div>
+        </div>
+
+        <div class="hrce-surface">
+            <h3>ﬁÊ«⁄œ «· ‰ﬁ·</h3>
+            <form id="rule-form" class="hrce-stack">
+                @Html.AntiForgeryToken()
+                <label>
+                    <span>Controller</span>
+                    <input class="hrce-input" name="controller" placeholder="Home" />
+                </label>
+                <label>
+                    <span>Action</span>
+                    <input class="hrce-input" name="action" placeholder="Index" />
+                </label>
+                <label>
+                    <span>Role</span>
+                    <input class="hrce-input" name="role" placeholder="Administrator" />
+                </label>
+                <label>
+                    <span>Claim</span>
+                    <input class="hrce-input" name="claimType" placeholder="permission" />
+                </label>
+                <label>
+                    <span>Claim Value</span>
+                    <input class="hrce-input" name="claimValue" placeholder="ui.builder" />
+                </label>
+                <label>
+                    <span>Visible</span>
+                    <select class="hrce-input" name="isVisible">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </label>
+                <button class="btn btn-secondary" type="submit">≈÷«›… ﬁ«⁄œ…</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="hrce-surface">
+        <h3>«·ﬁÊ«⁄œ «·Õ«·Ì…</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Scope</th>
+                    <th>Target</th>
+                    <th>Role</th>
+                    <th>Claim</th>
+                    <th>Visible</th>
+                </tr>
+            </thead>
+            <tbody id="rule-table">
+                <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/hrce-builder.js" defer></script>
+}

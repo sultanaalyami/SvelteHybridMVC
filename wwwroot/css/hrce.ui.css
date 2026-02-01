@@ -1,0 +1,196 @@
+@layer hrce {
+  :where(.hrce-ui) {
+    --hrce-bg: #0b0f1a;
+    --hrce-surface: #111827;
+    --hrce-surface-2: #0f172a;
+    --hrce-card: #111c2f;
+    --hrce-border: rgba(148, 163, 184, 0.12);
+    --hrce-text: #e2e8f0;
+    --hrce-text-muted: #94a3b8;
+    --hrce-primary: #60a5fa;
+    --hrce-accent: #22d3ee;
+    --hrce-success: #34d399;
+    --hrce-warning: #f59e0b;
+    --hrce-radius: 16px;
+    --hrce-shadow: 0 20px 60px rgba(15, 23, 42, 0.45);
+    --hrce-font: "Inter", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--hrce-font);
+    color: var(--hrce-text);
+    background: radial-gradient(circle at top, #0b1225 0%, #090c14 45%, #070a11 100%);
+    min-height: 100vh;
+  }
+
+  :where(body.hrce-layout-diagnostics .hrce-ui) {
+    --hrce-surface: #0b1f2e;
+    --hrce-card: #10263a;
+    --hrce-accent: #38bdf8;
+  }
+
+  :where(body.hrce-layout-identity .hrce-ui) {
+    --hrce-surface: #111018;
+    --hrce-card: #1a1626;
+    --hrce-primary: #a78bfa;
+  }
+
+  :where(.hrce-ui) * {
+    box-sizing: border-box;
+  }
+
+  :where(.hrce-app) {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+  }
+
+  :where(.hrce-header) {
+    backdrop-filter: blur(14px);
+    background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid var(--hrce-border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  :where(.hrce-nav) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+  }
+
+  :where(.hrce-nav__brand) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  :where(.hrce-nav__title) {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--hrce-text-muted);
+    font-size: 0.95rem;
+  }
+
+  :where(.hrce-nav__links) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  :where(.hrce-nav__link) {
+    text-decoration: none;
+    color: var(--hrce-text);
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: all 180ms ease;
+    background: rgba(148, 163, 184, 0.06);
+  }
+
+  :where(.hrce-nav__link:hover),
+  :where(.hrce-nav__link.is-active) {
+    background: rgba(96, 165, 250, 0.16);
+    border-color: rgba(96, 165, 250, 0.4);
+    color: #fff;
+  }
+
+  :where(.hrce-pill) {
+    background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 45%, #a78bfa 100%);
+    color: #0f172a;
+    font-weight: 700;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+  }
+
+  :where(.hrce-main) {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+    width: 100%;
+  }
+
+  :where(.hrce-surface) {
+    background: var(--hrce-surface);
+    border: 1px solid var(--hrce-border);
+    border-radius: var(--hrce-radius);
+    padding: 1.75rem;
+    box-shadow: var(--hrce-shadow);
+  }
+
+  :where(.hrce-grid) {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  :where(.hrce-grid--two) {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  :where(.hrce-card) {
+    background: var(--hrce-card);
+    border: 1px solid var(--hrce-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  :where(.hrce-card__label) {
+    color: var(--hrce-text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  :where(.hrce-card__value) {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+
+  :where(.hrce-footer) {
+    border-top: 1px solid var(--hrce-border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    color: var(--hrce-text-muted);
+    background: rgba(15, 23, 42, 0.65);
+  }
+
+  :where(.hrce-stack) {
+    display: grid;
+    gap: 1rem;
+  }
+
+  :where(.hrce-input) {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.65);
+    color: var(--hrce-text);
+  }
+
+  :where(.hrce-input:focus) {
+    outline: 2px solid rgba(96, 165, 250, 0.35);
+    outline-offset: 2px;
+  }
+
+  :where(.hrce-muted) {
+    color: var(--hrce-text-muted);
+  }
+
+  @media (max-width: 900px) {
+    :where(.hrce-nav) {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+
+    :where(.hrce-nav__links) {
+      justify-content: flex-start;
+    }
+  }
+}

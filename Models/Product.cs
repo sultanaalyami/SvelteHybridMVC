@@ -1,4 +1,4 @@
-namespace SvelteHybridMVC.Models;
+﻿namespace HRCE.Models;
 
 public class Product
 {

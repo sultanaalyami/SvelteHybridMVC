@@ -1,0 +1,130 @@
+# ?? SvelteHybrid.AspNetCore NuGet Package
+
+ „ ≈‰‘«¡ Õ“„… NuGet «Õ —«›Ì… ·œ„Ã Svelte „⁄ ASP.NET Core!
+
+## ?? „Êﬁ⁄ «·Õ“„…
+
+```
+packages/
+??? SvelteHybrid.AspNetCore.1.0.0.nupkg      # «·Õ“„… «·—∆Ì”Ì…
+??? SvelteHybrid.AspNetCore.1.0.0.snupkg     # —„Ê“ «· ’ÕÌÕ
+```
+
+## ?? «· À»Ì 
+
+### „‰ «·„Ã·œ «·„Õ·Ì:
+```bash
+dotnet add package SvelteHybrid.AspNetCore --source ./packages
+```
+
+### ‰‘— ≈·Ï NuGet.org:
+```bash
+dotnet nuget push packages/SvelteHybrid.AspNetCore.1.0.0.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
+```
+
+## ?? «·«” Œœ«„ «·”—Ì⁄
+
+### 1. ≈÷«›… «·Œœ„« 
+
+```csharp
+// Program.cs
+using SvelteHybrid.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ≈÷«›… Œœ„«  SvelteHybrid
+builder.Services.AddSvelteHybrid(options =>
+{
+    options.EnableSvelteSSR = true;
+    options.IsolationMode = IsolationMode.Full;
+    options.ComponentBasePath = "~/Components";
+});
+
+var app = builder.Build();
+
+// «” Œœ«„ Middleware
+app.UseSvelteHybrid();
+
+app.Run();
+```
+
+### 2. «” Œœ«„ Tag Helper
+
+```html
+<!-- Views/_ViewImports.cshtml -->
+@addTagHelper *, SvelteHybrid.AspNetCore
+```
+
+```html
+<!-- Views/Products/Index.cshtml -->
+<svelte component="ProductCard" props="@Model.Product" />
+
+<!-- „⁄ ”Ì«”…  ›ÊÌ÷ -->
+<svelte component="AdminPanel" require-policy="AdminOnly" />
+
+<!-- ⁄—÷ „‰ Ã«‰» «·⁄„Ì· ›ﬁÿ -->
+<svelte component="Chart" props="@Model.Data" client-only />
+```
+
+### 3. «” Œœ«„ HTML Helper
+
+```csharp
+@await Html.SvelteAsync("ProductCard", Model.Product)
+```
+
+### 4. «” Œœ«„ Directive ›Ì Razor
+
+```html
+@svelte "ProductCard"
+@svelte "AdminPanel" @require-policy "AdminOnly"
+```
+
+## ? «·„Ì“« 
+
+| «·„Ì“… | «·Ê’› |
+|--------|--------|
+| ??? SSR | ⁄—÷ „‰ Ã«‰» «·Œ«œ„ ··√œ«¡ ÊSEO |
+| ?? «·⁄“· | ⁄“· CSS ÊJavaScript ··„ﬂÊ‰«  |
+| ?? «· ›ÊÌ÷ | œ⁄„ ”Ì«”«  «· ›ÊÌ÷ |
+| ?? «· —ÿÌ» |  —ÿÌ» ”·” ·· ›«⁄· |
+| ? «· Œ“Ì‰ «·„ƒﬁ  |  Œ“Ì‰ „ƒﬁ  ··√œ«¡ |
+| ?? Tag Helpers | œ⁄„ Tag Helpers |
+| ?? Hot Reload | ≈⁄«œ…  Õ„Ì· ”—Ì⁄ ›Ì «· ÿÊÌ— |
+
+## ?? ÂÌﬂ· «·Õ“„…
+
+```
+src/SvelteHybrid.AspNetCore/
+??? Abstractions/              # «·Ê«ÃÂ« 
+?   ??? ISvelteRenderer.cs
+?   ??? IHybridViewEngine.cs
+?   ??? IIsolationService.cs
+?   ??? INodeService.cs
+??? Services/                  # «· ‰›Ì–« 
+?   ??? SvelteRenderer.cs
+?   ??? HybridViewEngine.cs
+?   ??? IsolationService.cs
+?   ??? NodeService.cs
+??? Middleware/                # Middleware
+?   ??? SvelteHybridMiddleware.cs
+??? Extensions/                # «„ œ«œ« 
+?   ??? ServiceCollectionExtensions.cs
+?   ??? HtmlHelperExtensions.cs
+??? TagHelpers/                # Tag Helpers
+?   ??? SvelteTagHelper.cs
+??? content/                   # „Õ ÊÏ «·Õ“„…
+?   ??? wwwroot/js/           # JavaScript Runtime
+?   ??? node-ssr/             # Œ«œ„ Node.js
+?   ??? Components/           # „ﬂÊ‰«  ‰„Ê–ÃÌ…
+??? SvelteHybridOptions.cs    # ŒÌ«—«  «· ﬂÊÌ‰
+```
+
+## ?? «·√‰Ÿ„… «·„œ⁄Ê„…
+
+- ? .NET 8.0
+- ? .NET 9.0
+- ? .NET 10.0
+
+## ?? «· —ŒÌ’
+
+MIT License

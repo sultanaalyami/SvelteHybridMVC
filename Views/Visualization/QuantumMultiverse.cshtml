@@ -1,0 +1,960 @@
+@{
+    ViewData["Title"] = "Quantum Multiverse Engine - محرك الكون الكمي المتعدد";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" href="~/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000005;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        #quantum-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        /* شاشة التحميل */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #000011 0%, #001133 50%, #000022 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s, visibility 1s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .quantum-loader {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .quantum-loader .orbit {
+            position: absolute;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            animation: orbit linear infinite;
+        }
+
+        .quantum-loader .orbit:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #4488ff;
+            animation-duration: 3s;
+        }
+
+        .quantum-loader .orbit:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-right-color: #ff44aa;
+            animation-duration: 2s;
+            animation-direction: reverse;
+        }
+
+        .quantum-loader .orbit:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: #44ffaa;
+            animation-duration: 1.5s;
+        }
+
+        .quantum-loader .core {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #fff, #4488ff);
+            border-radius: 50%;
+            box-shadow: 0 0 30px #4488ff, 0 0 60px #4488ff;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @@keyframes orbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @@keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: #4488ff;
+            text-shadow: 0 0 20px rgba(68, 136, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(68, 136, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4488ff, #ff44aa, #44ffaa);
+            width: 0%;
+            transition: width 0.3s;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @@keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* واجهة HUD */
+        .hud {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .hud > * {
+            pointer-events: auto;
+        }
+
+        /* لوحة الإحصائيات الكمية */
+        .quantum-stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 10, 30, 0.85);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 320px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 30px rgba(68, 136, 255, 0.1),
+                inset 0 0 30px rgba(68, 136, 255, 0.05);
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4488ff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(68, 136, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: rgba(68, 136, 255, 0.1);
+            border: 1px solid rgba(68, 136, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-value.coherent { color: #44ffaa; text-shadow: 0 0 10px rgba(68, 255, 170, 0.5); }
+        .stat-value.collapsed { color: #ff44aa; text-shadow: 0 0 10px rgba(255, 68, 170, 0.5); }
+        .stat-value.entangled { color: #ffaa44; text-shadow: 0 0 10px rgba(255, 170, 68, 0.5); }
+        .stat-value.dimensional { color: #44aaff; text-shadow: 0 0 10px rgba(68, 170, 255, 0.5); }
+
+        /* لوحة التحكم */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 10, 30, 0.85);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 30px rgba(68, 136, 255, 0.1);
+        }
+
+        .control-title {
+            font-size: 14px;
+            color: #4488ff;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, rgba(68, 136, 255, 0.2), rgba(68, 136, 255, 0.1));
+            border: 1px solid rgba(68, 136, 255, 0.4);
+            color: #4488ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px rgba(68, 136, 255, 0.3);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, rgba(68, 136, 255, 0.4), rgba(68, 136, 255, 0.2));
+            box-shadow: 0 0 20px rgba(68, 136, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, rgba(68, 255, 170, 0.3), rgba(68, 255, 170, 0.1));
+            border-color: rgba(68, 255, 170, 0.5);
+            color: #44ffaa;
+        }
+
+        .control-btn.danger {
+            background: linear-gradient(135deg, rgba(255, 68, 170, 0.3), rgba(255, 68, 170, 0.1));
+            border-color: rgba(255, 68, 170, 0.5);
+            color: #ff44aa;
+        }
+
+        /* لوحة الأبعاد */
+        .dimension-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .dimension-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid rgba(68, 136, 255, 0.3);
+            background: rgba(68, 136, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .dimension-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .dimension-btn.d1 { border-color: #ff4488; color: #ff4488; }
+        .dimension-btn.d2 { border-color: #44ff88; color: #44ff88; }
+        .dimension-btn.d3 { border-color: #8844ff; color: #8844ff; }
+        .dimension-btn.d4 { border-color: #ffff44; color: #ffff44; }
+        .dimension-btn.d5 { border-color: #44ffff; color: #44ffff; }
+        .dimension-btn.d6 { border-color: #ff8844; color: #ff8844; }
+        .dimension-btn.d7 { border-color: #88ff44; color: #88ff44; }
+
+        /* دليل تدفق البيانات */
+        .data-legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 10, 30, 0.85);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+        }
+
+        .legend-title {
+            font-size: 12px;
+            color: #4488ff;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 11px;
+        }
+
+        .legend-indicator {
+            width: 25px;
+            height: 4px;
+            border-radius: 2px;
+            margin-left: 10px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .legend-indicator.kernel { background: #ff4444; }
+        .legend-indicator.network { background: #44ff44; }
+        .legend-indicator.process { background: #4444ff; }
+        .legend-indicator.memory { background: #ffff44; }
+        .legend-indicator.syscall { background: #ff44ff; }
+
+        /* شريط المعلومات السفلي */
+        .info-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 10, 30, 0.85);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px 20px;
+            backdrop-filter: blur(15px);
+            display: flex;
+            gap: 30px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            color: #4488ff;
+        }
+
+        /* رسالة المساعدة */
+        .help-tooltip {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 10, 30, 0.95);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 300px;
+            backdrop-filter: blur(15px);
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .help-tooltip.visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-title {
+            font-size: 14px;
+            color: #4488ff;
+            margin-bottom: 15px;
+        }
+
+        .help-item {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .help-key {
+            background: rgba(68, 136, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+            color: #4488ff;
+        }
+
+        /* تأثيرات الزوايا */
+        .corner-decoration {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(68, 136, 255, 0.2);
+            pointer-events: none;
+        }
+
+        .corner-decoration.top-left {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* شريط الحالة الكمية */
+        .quantum-status-bar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 10, 30, 0.8);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            padding: 10px 30px;
+            display: flex;
+            gap: 40px;
+            backdrop-filter: blur(15px);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        .status-dot.active { background: #44ffaa; box-shadow: 0 0 10px #44ffaa; }
+        .status-dot.warning { background: #ffaa44; box-shadow: 0 0 10px #ffaa44; }
+        .status-dot.critical { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
+
+        @@keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* وضع ملء الشاشة */
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 50px;
+            background: rgba(0, 10, 30, 0.8);
+            border: 1px solid rgba(68, 136, 255, 0.3);
+            border-radius: 10px;
+            padding: 8px 20px;
+            color: #4488ff;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(68, 136, 255, 0.2);
+            box-shadow: 0 0 20px rgba(68, 136, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة التحميل -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="quantum-loader">
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="core"></div>
+        </div>
+        <div class="loading-text" id="loadingText">تهيئة المحرك الكمي...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- حاوية العرض -->
+    <div id="quantum-container"></div>
+
+    <!-- زخرفة الزوايا -->
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration top-right"></div>
+    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <!-- شريط الحالة -->
+    <div class="quantum-status-bar">
+        <div class="status-indicator">
+            <div class="status-dot active" id="statusDot"></div>
+            <span id="statusText">متصل بتدفق eBPF</span>
+        </div>
+        <div class="status-indicator">
+            <span>التماسك الكمي:</span>
+            <span id="coherencePercent">95%</span>
+        </div>
+        <div class="status-indicator">
+            <span>البعد الحالي:</span>
+            <span id="currentDimension">الكل</span>
+        </div>
+    </div>
+
+    <!-- زر ملء الشاشة -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ ملء الشاشة</button>
+
+    <!-- لوحة الإحصائيات -->
+    <div class="quantum-stats">
+        <div class="stats-title">◈ الحالة الكمية ◈</div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">الأحداث الكلية</div>
+                <div class="stat-value coherent" id="totalEvents">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">معدل الانهيار</div>
+                <div class="stat-value collapsed" id="collapseRate">0/ث</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">الأزواج المتشابكة</div>
+                <div class="stat-value entangled" id="entangledPairs">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">الانحراف البعدي</div>
+                <div class="stat-value dimensional" id="dimensionalDrift">0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم -->
+    <div class="control-panel">
+        <div class="control-title">◈ التحكم الكمي ◈</div>
+        
+        <div class="control-group">
+            <button class="control-btn active" id="toggleStream">◉ إيقاف البث</button>
+            <button class="control-btn" id="toggleCoherence">◎ تبديل التماسك</button>
+            <button class="control-btn danger" id="collapseWave">⚡ انهيار الموجة</button>
+            <button class="control-btn" id="toggleObserver">👁 وضع المراقب</button>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">اختر البعد (1-7)</div>
+            <div class="dimension-selector">
+                <button class="dimension-btn d1" onclick="focusDimension(0)">1</button>
+                <button class="dimension-btn d2" onclick="focusDimension(1)">2</button>
+                <button class="dimension-btn d3" onclick="focusDimension(2)">3</button>
+                <button class="dimension-btn d4" onclick="focusDimension(3)">4</button>
+                <button class="dimension-btn d5" onclick="focusDimension(4)">5</button>
+                <button class="dimension-btn d6" onclick="focusDimension(5)">6</button>
+                <button class="dimension-btn d7" onclick="focusDimension(6)">7</button>
+            </div>
+        </div>
+
+        <button class="control-btn" onclick="showHelp()">؟ المساعدة</button>
+    </div>
+
+    <!-- دليل البيانات -->
+    <div class="data-legend">
+        <div class="legend-title">◈ تدفقات البيانات ◈</div>
+        <div class="legend-item">
+            <span>نواة النظام</span>
+            <div class="legend-indicator kernel"></div>
+        </div>
+        <div class="legend-item">
+            <span>حركة الشبكة</span>
+            <div class="legend-indicator network"></div>
+        </div>
+        <div class="legend-item">
+            <span>العمليات</span>
+            <div class="legend-indicator process"></div>
+        </div>
+        <div class="legend-item">
+            <span>الذاكرة</span>
+            <div class="legend-indicator memory"></div>
+        </div>
+        <div class="legend-item">
+            <span>استدعاءات النظام</span>
+            <div class="legend-indicator syscall"></div>
+        </div>
+    </div>
+
+    <!-- شريط المعلومات -->
+    <div class="info-bar">
+        <div class="info-item">
+            <div class="info-label">وقت التشغيل</div>
+            <div class="info-value" id="uptime">00:00:00</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">معدل الإطارات</div>
+            <div class="info-value" id="fps">60</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">تأثير المراقب</div>
+            <div class="info-value" id="observerEffect">0.00</div>
+        </div>
+    </div>
+
+    <!-- نافذة المساعدة -->
+    <div class="help-tooltip" id="helpTooltip">
+        <div class="help-title">◈ اختصارات لوحة المفاتيح ◈</div>
+        <div class="help-item">
+            <span>التنقل بين الأبعاد</span>
+            <span class="help-key">1-7</span>
+        </div>
+        <div class="help-item">
+            <span>انهيار دالة الموجة</span>
+            <span class="help-key">Space</span>
+        </div>
+        <div class="help-item">
+            <span>تبديل التماسك</span>
+            <span class="help-key">C</span>
+        </div>
+        <div class="help-item">
+            <span>وضع المراقب</span>
+            <span class="help-key">O</span>
+        </div>
+        <div class="help-item">
+            <span>السحب للدوران</span>
+            <span class="help-key">الماوس</span>
+        </div>
+        <div class="help-item">
+            <span>التكبير/التصغير</span>
+            <span class="help-key">العجلة</span>
+        </div>
+        <div class="help-item">
+            <span>انهيار محلي</span>
+            <span class="help-key">نقر</span>
+        </div>
+    </div>
+
+    <script src="~/js/quantum-multiverse-engine.js"></script>
+    <script>
+        let quantumEngine;
+        let startTime = Date.now();
+        let frameCount = 0;
+        let lastFpsUpdate = Date.now();
+        let isStreamActive = true;
+        let helpVisible = false;
+
+        // تحديث شريط التحميل
+        function updateLoadingProgress(progress, text) {
+            document.getElementById('loadingProgress').style.width = progress + '%';
+            if (text) {
+                document.getElementById('loadingText').textContent = text;
+            }
+        }
+
+        // تهيئة المحرك
+        async function initEngine() {
+            updateLoadingProgress(20, 'تحميل مكتبات Three.js...');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            updateLoadingProgress(40, 'تهيئة المشهد الكمي...');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            updateLoadingProgress(60, 'إنشاء طبقات الأبعاد المتعددة...');
+            
+            try {
+                quantumEngine = new QuantumMultiverseEngine('quantum-container', {
+                    dimensions: 4,
+                    particleCount: 30000,
+                    waveFunctionResolution: 128,
+                    multiverseLayers: 7,
+                    observerSensitivity: 0.8,
+                    quantumCoherence: 0.95,
+                    dataStreamRate: 30
+                });
+
+                updateLoadingProgress(80, 'الاتصال بتدفق البيانات...');
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                updateLoadingProgress(100, 'جاهز!');
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                document.getElementById('loadingScreen').classList.add('hidden');
+                
+                // بدء تحديث الإحصائيات
+                startStatsUpdate();
+                
+                // إعداد callback للإحصائيات
+                quantumEngine.onStatsUpdate = updateStatsDisplay;
+                
+            } catch (error) {
+                console.error('Failed to initialize quantum engine:', error);
+                updateLoadingProgress(100, 'خطأ في التهيئة: ' + error.message);
+            }
+        }
+
+        // تحديث عرض الإحصائيات
+        function updateStatsDisplay(stats) {
+            if (!stats) return;
+            
+            document.getElementById('totalEvents').textContent = stats.totalEvents?.toLocaleString() || '0';
+            document.getElementById('collapseRate').textContent = (stats.collapseRate || 0) + '/ث';
+            document.getElementById('entangledPairs').textContent = stats.quantumState?.entangledPairs || '0';
+            document.getElementById('dimensionalDrift').textContent = (stats.dimensionalDrift || 0).toFixed(2);
+            document.getElementById('observerEffect').textContent = (stats.observerEffect || 0).toFixed(2);
+            document.getElementById('coherencePercent').textContent = Math.round((stats.coherenceLevel || 0.95) * 100) + '%';
+        }
+
+        // تحديث الإحصائيات
+        function startStatsUpdate() {
+            setInterval(() => {
+                // وقت التشغيل
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('uptime').textContent = `${hours}:${minutes}:${seconds}`;
+                
+                // معدل الإطارات
+                frameCount++;
+                const now = Date.now();
+                if (now - lastFpsUpdate >= 1000) {
+                    document.getElementById('fps').textContent = frameCount;
+                    frameCount = 0;
+                    lastFpsUpdate = now;
+                }
+                
+                // تحديث من المحرك
+                if (quantumEngine) {
+                    const stats = quantumEngine.getStats();
+                    updateStatsDisplay(stats);
+                }
+            }, 100);
+        }
+
+        // التحكم في البث
+        document.getElementById('toggleStream').addEventListener('click', function() {
+            isStreamActive = !isStreamActive;
+            this.textContent = isStreamActive ? '◉ إيقاف البث' : '◉ تشغيل البث';
+            this.classList.toggle('active');
+            
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (isStreamActive) {
+                statusDot.className = 'status-dot active';
+                statusText.textContent = 'متصل بتدفق eBPF';
+            } else {
+                statusDot.className = 'status-dot warning';
+                statusText.textContent = 'البث متوقف';
+            }
+        });
+
+        // تبديل التماسك - مع تأثير حقيقي على أولوية العملية
+        document.getElementById('toggleCoherence').addEventListener('click', async function() {
+            if (quantumEngine) {
+                quantumEngine.toggleCoherence();
+                this.classList.toggle('active');
+                
+                // استدعاء API لتغيير أولوية العملية
+                try {
+                    const level = this.classList.contains('active') ? 'high' : 'normal';
+                    const response = await fetch(`/api/QuantumTools/coherence?level=${level}`, { method: 'POST' });
+                    const result = await response.json();
+                    console.log('Coherence adjustment:', result);
+                    
+                    showNotification(`التماسك: ${result.delta?.priority_class || level}`, 'info');
+                } catch (e) {
+                    console.error('Coherence API error:', e);
+                }
+            }
+        });
+
+        // انهيار الموجة - مع تأثير حقيقي على النظام
+        document.getElementById('collapseWave').addEventListener('click', async function() {
+            if (quantumEngine) {
+                quantumEngine.triggerWaveFunctionCollapse();
+                
+                // استدعاء API للانهيار الحقيقي (GC)
+                try {
+                    const response = await fetch('/api/QuantumTools/collapse?generation=2', { method: 'POST' });
+                    const result = await response.json();
+                    console.log('Real wave collapse:', result);
+                    
+                    // عرض النتائج الحقيقية
+                    showNotification(`انهيار حقيقي: تحرير ${formatBytes(result.delta?.memory_freed_bytes || 0)}`, 'success');
+                } catch (e) {
+                    console.error('Collapse API error:', e);
+                }
+            }
+        });
+
+        // وضع المراقب
+        document.getElementById('toggleObserver').addEventListener('click', function() {
+            if (quantumEngine) {
+                quantumEngine.toggleObserverMode();
+                this.classList.toggle('active');
+            }
+        });
+
+        // التركيز على بعد معين
+        function focusDimension(index) {
+            if (quantumEngine) {
+                quantumEngine.focusOnDimension(index);
+                document.getElementById('currentDimension').textContent = 'البعد ' + (index + 1);
+            }
+        }
+
+        // عرض المساعدة
+        function showHelp() {
+            helpVisible = !helpVisible;
+            document.getElementById('helpTooltip').classList.toggle('visible', helpVisible);
+        }
+
+        // ملء الشاشة
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // عرض الإشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'quantum-notification ' + type;
+            notification.innerHTML = `
+                <span class="notification-icon">${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+                <span class="notification-text">${message}</span>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 10, 30, 0.95);
+                border: 1px solid ${type === 'success' ? '#44ffaa' : type === 'error' ? '#ff4444' : '#4488ff'};
+                border-radius: 10px;
+                padding: 12px 24px;
+                color: ${type === 'success' ? '#44ffaa' : type === 'error' ? '#ff4444' : '#4488ff'};
+                font-size: 13px;
+                z-index: 9999;
+                animation: slideUp 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // تنسيق البايتات
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // قياس حالة النظام دورياً
+        async function measureSystemState() {
+            try {
+                const response = await fetch('/api/QuantumTools/measure');
+                const result = await response.json();
+                
+                if (result.after) {
+                    // تحديث واجهة المستخدم ببيانات حقيقية
+                    document.getElementById('coherencePercent').textContent = 
+                        Math.round((result.delta?.coherence_level || 0.95) * 100) + '%';
+                }
+                
+                return result;
+            } catch (e) {
+                console.error('Measurement error:', e);
+                return null;
+            }
+        }
+
+        // بدء القياس الدوري
+        setInterval(measureSystemState, 5000);
+
+        // إغلاق المساعدة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            if (helpVisible && !e.target.closest('.help-tooltip') && !e.target.closest('.control-btn')) {
+                helpVisible = false;
+                document.getElementById('helpTooltip').classList.remove('visible');
+            }
+        });
+
+        // بدء التشغيل
+        document.addEventListener('DOMContentLoaded', initEngine);
+
+        // تنظيف عند الإغلاق
+        window.addEventListener('beforeunload', () => {
+            if (quantumEngine) {
+                quantumEngine.destroy();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+@model IReadOnlyList<HRCE.ViewComponents.NavigationMenuViewComponent.NavigationItem>
+
+<nav class="hrce-nav" aria-label="Primary">
+    <div class="hrce-nav__brand">
+        <span class="hrce-pill">HRCE</span>
+        <span class="hrce-nav__title">Hybrid Razor Component Engine</span>
+    </div>
+    <div class="hrce-nav__links">
+        @foreach (var item in Model)
+        {
+            if (item.IsPage)
+            {
+                <a class="hrce-nav__link@(item.IsActive ? " is-active" : string.Empty)"
+                   asp-page="@item.Page">
+                    @item.Label
+                </a>
+            }
+            else
+            {
+                <a class="hrce-nav__link@(item.IsActive ? " is-active" : string.Empty)"
+                   asp-controller="@item.Controller"
+                   asp-action="@item.Action">
+                    @item.Label
+                </a>
+            }
+        }
+    </div>
+</nav>

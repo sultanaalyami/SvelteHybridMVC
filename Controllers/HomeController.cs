@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace SvelteHybridMVC.Controllers;
+namespace HRCE.Controllers;
 
 public class HomeController : Controller
 {
+     
     public IActionResult Index()
     {
         return View();

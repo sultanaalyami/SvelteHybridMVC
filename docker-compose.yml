@@ -1,0 +1,127 @@
+﻿# ========================================
+# Docker Compose for HRCE Multi-Platform Development
+# ========================================
+
+version: '3.9'
+
+services:
+  # ============ Development Environment ============
+  hrce-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: hrce-dev
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+      - "3000:3000"
+    volumes:
+      # Hot reload support
+      - .:/src
+      - /src/bin
+      - /src/obj
+      - /src/Node/node_modules
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/hrce.db
+      - EBPF_ENABLED=true
+      - NODE_SERVER_URL=http://localhost:3000
+    networks:
+      - hrce-network
+    privileged: true  # Required for eBPF
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    volumes:
+      - hrce-data:/app/data
+    profiles:
+      - dev
+
+  # ============ Production Environment ============
+  hrce-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    container_name: hrce-prod
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/hrce.db
+      - EBPF_ENABLED=true
+      - NODE_SERVER_URL=http://node-server:3000
+    networks:
+      - hrce-network
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    volumes:
+      - hrce-data:/app/data
+    depends_on:
+      - node-server
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  # ============ Node.js Server (Svelte SSR) ============
+  node-server:
+    build:
+      context: ./Node
+      dockerfile: Dockerfile
+    container_name: hrce-node
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - hrce-network
+    restart: unless-stopped
+    profiles:
+      - prod
+
+  # ============ SQL Server (Optional) ============
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hrce-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Password123
+      - MSSQL_PID=Developer
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - hrce-network
+    profiles:
+      - sqlserver
+
+  # ============ eBPF Monitoring Dashboard ============
+  ebpf-exporter:
+    image: cloudflare/ebpf_exporter:latest
+    container_name: hrce-ebpf-exporter
+    ports:
+      - "9435:9435"
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      - hrce-network
+    profiles:
+      - monitoring
+
+networks:
+  hrce-network:
+    driver: bridge
+
+volumes:
+  hrce-data:
+    driver: local
+  sqlserver-data:
+    driver: local

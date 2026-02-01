@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HRCE.csproj" />
+  <Project Path="src/SvelteHybrid.AspNetCore/SvelteHybrid.AspNetCore.csproj" />
+</Solution>

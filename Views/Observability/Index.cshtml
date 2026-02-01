@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Observability";
+}
+
+<section class="hrce-stack">
+    <header class="hrce-stack">
+        <h1>„—’œ «·‰Ÿ«„</h1>
+        <p class="hrce-muted">⁄—÷ ›Ê—Ì Ê„‰Ÿ„ ·”Ã·«  «· ÿ»Ìﬁ „⁄  ’‰Ì› «·√Õœ«À.</p>
+    </header>
+
+    <div class="hrce-grid hrce-grid--two">
+        <div class="hrce-card">
+            <div class="hrce-card__label">Log Stream</div>
+            <div class="hrce-card__value" id="log-count">0</div>
+            <div class="hrce-muted">¬Œ— 200 ”Ã·</div>
+        </div>
+        <div class="hrce-card">
+            <div class="hrce-card__label">Error Rate</div>
+            <div class="hrce-card__value" id="error-rate">0%</div>
+            <div class="hrce-muted">„⁄œ· «·√Œÿ«¡ «·Õ«·Ì</div>
+        </div>
+    </div>
+
+    <div class="hrce-surface" style="overflow:auto; max-height: 420px;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>«·Êﬁ </th>
+                    <th>«·„” ÊÏ</th>
+                    <th>«·—”«·…</th>
+                    <th>«·„”«—</th>
+                </tr>
+            </thead>
+            <tbody id="log-table">
+                <tr><td colspan="4">Ã«—Ú «· Õ„Ì·...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/hrce-observability.js" defer></script>
+}

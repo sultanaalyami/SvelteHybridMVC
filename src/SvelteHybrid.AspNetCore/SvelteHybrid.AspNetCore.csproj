@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Package Metadata -->
+    <PackageId>SvelteHybrid.AspNetCore</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>HRCE Team</Authors>
+    <Company>SvelteHybrid</Company>
+    <Product>SvelteHybrid for ASP.NET Core</Product>
+    <Description>
+      Professional library for integrating Svelte components with ASP.NET Core MVC and Razor Pages.
+      Features include Server-Side Rendering (SSR), component isolation, authorization policies,
+      and seamless hydration for interactive Svelte components within Razor views.
+    </Description>
+    <PackageTags>svelte;aspnetcore;mvc;razor;ssr;hybrid;components;spa;frontend</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sultanaalyami/SvelteHybridMVC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sultanaalyami/SvelteHybridMVC</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Build Configuration -->
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Package Generation -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Assembly Info -->
+    <AssemblyName>SvelteHybrid.AspNetCore</AssemblyName>
+    <RootNamespace>SvelteHybrid.AspNetCore</RootNamespace>
+    <Copyright>Copyright © 2025 SvelteHybrid Team</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <!-- Content Files for Templates -->
+  <ItemGroup>
+    <Content Include="content\**\*" Pack="true" PackagePath="contentFiles\any\any\SvelteHybrid\" />
+    <Content Include="build\**\*" Pack="true" PackagePath="build\" />
+  </ItemGroup>
+
+</Project>

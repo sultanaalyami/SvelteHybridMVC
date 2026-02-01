@@ -1,4 +1,4 @@
-namespace SvelteHybridMVC.Core;
+﻿namespace HRCE.Core;
 
 public class SvelteOptions
 {
