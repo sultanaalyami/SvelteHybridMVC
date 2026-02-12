@@ -1,0 +1,25 @@
+@* SvelteHybrid Login Partial - reactive auth state *@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    var userName = User.Identity?.Name ?? "";
+}
+
+<div class="hrce-nav__auth" s-reactive s-data="{ signedIn: @(isSignedIn ? "true" : "false"), user: '@userName' }">
+    <template s-if="signedIn">
+        <a class="hrce-nav__link" href="/Identity/Account/Manage">
+            <span s-text="user"></span>
+        </a>
+        <button class="hrce-nav__link hrce-nav__logout"
+                s-click="fetch('/Identity/Account/Logout', {method:'POST'}).then(()=>location.reload())">
+            Logout
+        </button>
+    </template>
+    <template s-if="!signedIn">
+        <a class="hrce-nav__link" href="/Identity/Account/Register">Register</a>
+        <a class="hrce-nav__link hrce-nav__login" href="/Identity/Account/Login">Login</a>
+    </template>
+</div>

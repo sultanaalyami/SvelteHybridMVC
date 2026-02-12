@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "لوحة تشغيل البناء";
+}
+
+<section class="hrce-stack hrce-buildops">
+    @Html.AntiForgeryToken()
+    <header class="hrce-page-header">
+        <div>
+            <h1>لوحة تشغيل البناء والتطوير</h1>
+            <p class="hrce-muted">تشغيل أوامر البناء المصرح بها ومتابعة النتائج بشكل آمن.</p>
+        </div>
+        <div class="hrce-buildops__actions">
+            <button class="btn btn-light" id="buildops-refresh" type="button">تحديث</button>
+        </div>
+    </header>
+
+    <div class="hrce-grid hrce-grid--two">
+        <div class="hrce-surface hrce-panel">
+            <h3>الأوامر المسموحة</h3>
+            <div class="hrce-stack" id="buildops-commands">
+                <div class="hrce-muted">جاري تحميل الأوامر...</div>
+            </div>
+        </div>
+
+        <div class="hrce-surface hrce-panel">
+            <h3>تفاصيل التنفيذ</h3>
+            <div class="hrce-stack">
+                <div class="hrce-buildops__status" id="buildops-status">لم يتم بدء أي عملية بعد.</div>
+                <div class="hrce-buildops__meta" id="buildops-meta"></div>
+                <div class="hrce-buildops__output" id="buildops-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hrce-surface hrce-panel">
+        <h3>سجل العمليات</h3>
+        <div class="hrce-table-container">
+            <table class="table hrce-data-table">
+                <thead>
+                    <tr>
+                        <th>الحالة</th>
+                        <th>الأمر</th>
+                        <th>بداية</th>
+                        <th>الانتهاء</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="buildops-history">
+                    <tr><td colspan="5">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/hrce-buildops.js" defer></script>
+}

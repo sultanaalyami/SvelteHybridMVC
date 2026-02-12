@@ -1,0 +1,953 @@
+﻿@{
+    ViewData["Title"] = "���� �������";
+    Layout = null; // Full-screen builder without layout
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0e17" />
+    <title>@ViewData["Title"] - HRCE Platform Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/hrce.desktop.css" />
+    <link rel="stylesheet" href="~/css/platform-builder.css" />
+</head>
+<body class="pb-body">
+    <div class="pb-app" id="platform-builder">
+        <!-- ???????????????????????????????????????????????????????????
+             Top Toolbar
+             ??????????????????????????????????????????????????????????? -->
+        <header class="pb-toolbar">
+            <div class="pb-toolbar__start">
+                <div class="pb-logo">
+                    <span class="pb-logo__icon"></span>
+                    <span class="pb-logo__text">HRCE Builder</span>
+                </div>
+                <div class="pb-toolbar__divider"></div>
+                <div class="pb-project-name">
+                    <input type="text" id="project-name" value="����� ����" class="pb-project-input" />
+                </div>
+            </div>
+            
+            <div class="pb-toolbar__center">
+                <div class="pb-view-switcher">
+                    <button class="pb-view-btn active" data-view="desktop" title="��� ������">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </button>
+                    <button class="pb-view-btn" data-view="tablet" title="���� ����">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </button>
+                    <button class="pb-view-btn" data-view="mobile" title="����">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="pb-zoom-control">
+                    <button class="pb-zoom-btn" id="zoom-out">?</button>
+                    <span class="pb-zoom-value" id="zoom-value">100%</span>
+                    <button class="pb-zoom-btn" id="zoom-in">+</button>
+                </div>
+            </div>
+            
+            <div class="pb-toolbar__end">
+                <button class="pb-btn pb-btn--ghost" id="btn-undo" title="�����">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v6h6"></path>
+                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                    </svg>
+                </button>
+                <button class="pb-btn pb-btn--ghost" id="btn-redo" title="�����">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 7v6h-6"></path>
+                        <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path>
+                    </svg>
+                </button>
+                <div class="pb-toolbar__divider"></div>
+                <button class="pb-btn pb-btn--ghost" id="btn-preview" title="������">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>������</span>
+                </button>
+                <button class="pb-btn pb-btn--ghost" id="btn-code" title="��� �����">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <span>�����</span>
+                </button>
+                <div class="pb-toolbar__divider"></div>
+                <button class="pb-btn pb-btn--primary" id="btn-save">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>���</span>
+                </button>
+                <button class="pb-btn pb-btn--success" id="btn-publish">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"></path>
+                        <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+                    </svg>
+                    <span>���</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ???????????????????????????????????????????????????????????
+             Main Content Area
+             ??????????????????????????????????????????????????????????? -->
+        <div class="pb-main">
+            <!-- Left Sidebar - Components Panel -->
+            <aside class="pb-sidebar pb-sidebar--left" id="components-panel">
+                <div class="pb-sidebar__header">
+                    <h3>��������</h3>
+                    <input type="text" class="pb-search-input" id="component-search" placeholder="���..." />
+                </div>
+                
+                <div class="pb-sidebar__content">
+                    <!-- Layout Components -->
+                    <div class="pb-component-group" data-group="layout">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <span>�������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="container">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="row">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="columns">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="grid">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="section">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Components -->
+                    <div class="pb-component-group" data-group="navigation">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                            <span>������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="navbar">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="7" r="1.5" fill="currentColor"/></svg>
+                                </div>
+                                <span>���� ����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="sidebar">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="breadcrumb">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><path d="M3 12h4l3-3 4 6 3-3h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���� ������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="tabs">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/><rect x="4" y="6" width="6" height="4" fill="currentColor" opacity="0.3"/></svg>
+                                </div>
+                                <span>�������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="menu">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="footer">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="14" width="20" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Components -->
+                    <div class="pb-component-group" data-group="content">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>�������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="heading">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><text x="6" y="17" font-size="14" font-weight="bold" fill="currentColor">H</text></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="paragraph">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="2"/><line x1="3" y1="18" x2="15" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="image">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="video">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16" fill="currentColor"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="icon">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="divider">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="spacer">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Display Components -->
+                    <div class="pb-component-group" data-group="data">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                            <span>��� ��������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="card">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="table">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/><line x1="3" y1="15" x2="21" y2="15" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="list">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/><line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="stat-card">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><text x="8" y="15" font-size="10" font-weight="bold" fill="currentColor">42</text></svg>
+                                </div>
+                                <span>����� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="progress">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="4" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="10" width="12" height="4" rx="2" fill="currentColor" opacity="0.5"/></svg>
+                                </div>
+                                <span>���� ����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="badge">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="8" rx="4" fill="currentColor" opacity="0.5" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="avatar">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���� ������</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Components -->
+                    <div class="pb-component-group" data-group="charts">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            <span>������ ��������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="bar-chart">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="12" width="4" height="8" fill="currentColor" opacity="0.5"/><rect x="10" y="6" width="4" height="14" fill="currentColor" opacity="0.7"/><rect x="16" y="9" width="4" height="11" fill="currentColor" opacity="0.5"/></svg>
+                                </div>
+                                <span>��� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="line-chart">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><polyline points="4 18 8 12 12 15 16 8 20 12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��� ���</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="pie-chart">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4 L12 12 L19 9" fill="currentColor" opacity="0.5"/></svg>
+                                </div>
+                                <span>��� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="area-chart">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><path d="M4 18 L8 12 L12 15 L16 8 L20 12 L20 20 L4 20 Z" fill="currentColor" opacity="0.3" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��� �����</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Components -->
+                    <div class="pb-component-group" data-group="forms">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="9" x2="15" y2="9"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            <span>�������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="form">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="8" x2="17" y2="8" stroke="currentColor" stroke-width="2"/><line x1="7" y1="14" x2="17" y2="14" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="input">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="12" x2="7" y2="12.01" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="textarea">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5"/></svg>
+                                </div>
+                                <span>����� ��</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="select">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 10 17 12 15 14" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����� ������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="checkbox">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="9 12 11 14 15 10" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���� ������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="radio">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+                                </div>
+                                <span>�� �����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="switch">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="12" r="2.5" fill="currentColor"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="button">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="2" fill="currentColor" opacity="0.5" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="file-upload">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��� ���</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="date-picker">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>������ �����</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Components -->
+                    <div class="pb-component-group" data-group="interactive">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path>
+                                <path d="M9 18h6"></path>
+                                <path d="M10 22h4"></path>
+                            </svg>
+                            <span>������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="modal">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="4" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>����� ������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="accordion">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="11" width="18" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 6.5 17 6.5" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>��������</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="tooltip">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 12 14 12 12 16" fill="currentColor"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="alert">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="carousel">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="17" r="1" fill="currentColor"/><circle cx="12" cy="17" r="1" fill="currentColor"/><circle cx="16" cy="17" r="1" fill="currentColor"/></svg>
+                                </div>
+                                <span>��� �����</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Components -->
+                    <div class="pb-component-group" data-group="media">
+                        <div class="pb-component-group__header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>�������</span>
+                        </div>
+                        <div class="pb-component-group__items">
+                            <div class="pb-component-item" draggable="true" data-component="gallery">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="2" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2" y="13" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="9" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>���� ���</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="map">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="18" stroke="currentColor" stroke-width="2"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="2"/></svg>
+                                </div>
+                                <span>�����</span>
+                            </div>
+                            <div class="pb-component-item" draggable="true" data-component="embed">
+                                <div class="pb-component-item__icon">
+                                    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="8 6 2 12 8 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                                </div>
+                                <span>����� �����</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="pb-canvas-wrapper">
+                <div class="pb-canvas-container" id="canvas-container">
+                    <div class="pb-canvas" id="canvas" data-view="desktop">
+                        <div class="pb-canvas__empty" id="canvas-placeholder">
+                            <div class="pb-canvas__empty-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                            </div>
+                            <h3>���� ������</h3>
+                            <p>���� �������� �� ������� �������� ������� ���</p>
+                            <div class="pb-canvas__shortcuts">
+                                <span><kbd>Ctrl</kbd> + <kbd>Z</kbd> �����</span>
+                                <span><kbd>Ctrl</kbd> + <kbd>S</kbd> ���</span>
+                                <span><kbd>Del</kbd> ���</span>
+                            </div>
+                        </div>
+                        <div class="pb-canvas__content" id="canvas-content"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Properties Panel -->
+            <aside class="pb-sidebar pb-sidebar--right" id="properties-panel">
+                <div class="pb-sidebar__tabs">
+                    <button class="pb-sidebar__tab active" data-tab="style">�������</button>
+                    <button class="pb-sidebar__tab" data-tab="settings">���������</button>
+                    <button class="pb-sidebar__tab" data-tab="data">��������</button>
+                </div>
+                
+                <div class="pb-sidebar__content">
+                    <!-- No Selection State -->
+                    <div class="pb-properties-empty" id="properties-empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <p>���� ������ ������ ������</p>
+                    </div>
+
+                    <!-- Properties Content -->
+                    <div class="pb-properties-content" id="properties-content" style="display: none;">
+                        <!-- Style Tab -->
+                        <div class="pb-tab-content active" data-tab="style">
+                            <!-- Layout Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>�������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>�����</label>
+                                        <div class="pb-input-group">
+                                            <input type="number" id="prop-width" class="pb-prop-input" />
+                                            <select id="prop-width-unit" class="pb-prop-select">
+                                                <option value="px">px</option>
+                                                <option value="%">%</option>
+                                                <option value="auto">auto</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>��������</label>
+                                        <div class="pb-input-group">
+                                            <input type="number" id="prop-height" class="pb-prop-input" />
+                                            <select id="prop-height-unit" class="pb-prop-select">
+                                                <option value="px">px</option>
+                                                <option value="%">%</option>
+                                                <option value="auto">auto</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Spacing Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>��������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-spacing-control">
+                                        <div class="pb-spacing-box">
+                                            <span class="pb-spacing-label">Margin</span>
+                                            <input type="number" id="prop-margin-top" class="pb-spacing-input pb-spacing-top" placeholder="0" />
+                                            <input type="number" id="prop-margin-right" class="pb-spacing-input pb-spacing-right" placeholder="0" />
+                                            <input type="number" id="prop-margin-bottom" class="pb-spacing-input pb-spacing-bottom" placeholder="0" />
+                                            <input type="number" id="prop-margin-left" class="pb-spacing-input pb-spacing-left" placeholder="0" />
+                                            <div class="pb-spacing-inner">
+                                                <span class="pb-spacing-label">Padding</span>
+                                                <input type="number" id="prop-padding-top" class="pb-spacing-input pb-spacing-top" placeholder="0" />
+                                                <input type="number" id="prop-padding-right" class="pb-spacing-input pb-spacing-right" placeholder="0" />
+                                                <input type="number" id="prop-padding-bottom" class="pb-spacing-input pb-spacing-bottom" placeholder="0" />
+                                                <input type="number" id="prop-padding-left" class="pb-spacing-input pb-spacing-left" placeholder="0" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Typography Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>����</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>����</label>
+                                        <select id="prop-font-family" class="pb-prop-select pb-prop-select--full">
+                                            <option value="inherit">�������</option>
+                                            <option value="Inter">Inter</option>
+                                            <option value="Cairo">Cairo</option>
+                                            <option value="Tajawal">Tajawal</option>
+                                        </select>
+                                    </div>
+                                    <div class="pb-property-row pb-property-row--inline">
+                                        <div>
+                                            <label>�����</label>
+                                            <input type="number" id="prop-font-size" class="pb-prop-input" />
+                                        </div>
+                                        <div>
+                                            <label>�����</label>
+                                            <select id="prop-font-weight" class="pb-prop-select">
+                                                <option value="400">����</option>
+                                                <option value="500">�����</option>
+                                                <option value="600">��� ����</option>
+                                                <option value="700">����</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>��������</label>
+                                        <div class="pb-btn-group">
+                                            <button class="pb-btn-icon" data-align="right" title="����">
+                                                <svg width="16" height="16" viewBox="0 0 24 24"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+                                            </button>
+                                            <button class="pb-btn-icon" data-align="center" title="���">
+                                                <svg width="16" height="16" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="6"/><line x1="21" y1="12" x2="3" y2="12"/><line x1="18" y1="18" x2="6" y2="18"/></svg>
+                                            </button>
+                                            <button class="pb-btn-icon" data-align="left" title="����">
+                                                <svg width="16" height="16" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="17" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>��� ����</label>
+                                        <div class="pb-color-input">
+                                            <input type="color" id="prop-text-color" value="#ffffff" />
+                                            <input type="text" id="prop-text-color-hex" class="pb-prop-input" value="#ffffff" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Background Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>�������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>�����</label>
+                                        <select id="prop-bg-type" class="pb-prop-select pb-prop-select--full">
+                                            <option value="color">���</option>
+                                            <option value="gradient">����</option>
+                                            <option value="image">����</option>
+                                        </select>
+                                    </div>
+                                    <div class="pb-property-row" id="bg-color-row">
+                                        <label>�����</label>
+                                        <div class="pb-color-input">
+                                            <input type="color" id="prop-bg-color" value="#1c2128" />
+                                            <input type="text" id="prop-bg-color-hex" class="pb-prop-input" value="#1c2128" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Border Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row pb-property-row--inline">
+                                        <div>
+                                            <label>������</label>
+                                            <input type="number" id="prop-border-width" class="pb-prop-input" value="0" />
+                                        </div>
+                                        <div>
+                                            <label>���������</label>
+                                            <input type="number" id="prop-border-radius" class="pb-prop-input" value="0" />
+                                        </div>
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>�����</label>
+                                        <div class="pb-color-input">
+                                            <input type="color" id="prop-border-color" value="#30363d" />
+                                            <input type="text" id="prop-border-color-hex" class="pb-prop-input" value="#30363d" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shadow Section -->
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>����</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>��� ����</label>
+                                        <select id="prop-shadow" class="pb-prop-select pb-prop-select--full">
+                                            <option value="none">����</option>
+                                            <option value="sm">����</option>
+                                            <option value="md">�����</option>
+                                            <option value="lg">����</option>
+                                            <option value="xl">���� ����</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div class="pb-tab-content" data-tab="settings">
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>������� ������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>������� (ID)</label>
+                                        <input type="text" id="prop-id" class="pb-prop-input pb-prop-input--full" />
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>������ (Classes)</label>
+                                        <input type="text" id="prop-classes" class="pb-prop-input pb-prop-input--full" />
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>������</label>
+                                        <select id="prop-visibility" class="pb-prop-select pb-prop-select--full">
+                                            <option value="visible">����</option>
+                                            <option value="hidden">����</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pb-property-section" id="link-settings" style="display: none;">
+                                <div class="pb-property-section__header">
+                                    <span>������� ������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>������</label>
+                                        <input type="text" id="prop-href" class="pb-prop-input pb-prop-input--full" placeholder="https://" />
+                                    </div>
+                                    <div class="pb-property-row">
+                                        <label>�����</label>
+                                        <select id="prop-target" class="pb-prop-select pb-prop-select--full">
+                                            <option value="_self">��� �������</option>
+                                            <option value="_blank">����� �����</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Tab -->
+                        <div class="pb-tab-content" data-tab="data">
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>���� ��������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>�����</label>
+                                        <select id="prop-data-source" class="pb-prop-select pb-prop-select--full">
+                                            <option value="static">����</option>
+                                            <option value="api">API</option>
+                                            <option value="database">����� ������</option>
+                                        </select>
+                                    </div>
+                                    <div class="pb-property-row" id="api-url-row" style="display: none;">
+                                        <label>���� API</label>
+                                        <input type="text" id="prop-api-url" class="pb-prop-input pb-prop-input--full" placeholder="/api/data" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pb-property-section">
+                                <div class="pb-property-section__header">
+                                    <span>����� ����������</span>
+                                </div>
+                                <div class="pb-property-section__content">
+                                    <div class="pb-property-row">
+                                        <label>��� ������</label>
+                                        <input type="text" id="prop-binding" class="pb-prop-input pb-prop-input--full" placeholder="{{variableName}}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Element Actions -->
+                <div class="pb-sidebar__footer" id="element-actions" style="display: none;">
+                    <button class="pb-btn pb-btn--ghost pb-btn--sm" id="btn-duplicate" title="���">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                    <button class="pb-btn pb-btn--ghost pb-btn--sm" id="btn-move-up" title="����� ������">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                    </button>
+                    <button class="pb-btn pb-btn--ghost pb-btn--sm" id="btn-move-down" title="����� ������">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <button class="pb-btn pb-btn--danger pb-btn--sm" id="btn-delete" title="���">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Panel - Pages/Layers -->
+        <footer class="pb-bottom-panel">
+            <div class="pb-pages-panel">
+                <div class="pb-pages-header">
+                    <span>�������</span>
+                    <button class="pb-btn pb-btn--ghost pb-btn--xs" id="btn-add-page" title="����� ����">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="pb-pages-list" id="pages-list">
+                    <div class="pb-page-item active" data-page="home">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        </svg>
+                        <span>��������</span>
+                    </div>
+                </div>
+            </div>
+            <div class="pb-layers-panel">
+                <div class="pb-layers-header">
+                    <span>�������</span>
+                </div>
+                <div class="pb-layers-tree" id="layers-tree"></div>
+            </div>
+            <div class="pb-status-bar">
+                <span id="status-message">����</span>
+                <span id="element-count">0 �����</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="pb-modal" id="preview-modal">
+        <div class="pb-modal__backdrop"></div>
+        <div class="pb-modal__content pb-modal__content--fullscreen">
+            <div class="pb-modal__header">
+                <h3>������</h3>
+                <button class="pb-btn pb-btn--ghost" id="close-preview">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="pb-modal__body">
+                <iframe id="preview-frame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Modal -->
+    <div class="pb-modal" id="code-modal">
+        <div class="pb-modal__backdrop"></div>
+        <div class="pb-modal__content pb-modal__content--large">
+            <div class="pb-modal__header">
+                <h3>����� �������</h3>
+                <div class="pb-modal__tabs">
+                    <button class="pb-modal__tab active" data-code="html">HTML</button>
+                    <button class="pb-modal__tab" data-code="css">CSS</button>
+                    <button class="pb-modal__tab" data-code="razor">Razor</button>
+                </div>
+                <button class="pb-btn pb-btn--ghost" id="close-code">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="pb-modal__body">
+                <pre class="pb-code-block"><code id="generated-code"></code></pre>
+            </div>
+            <div class="pb-modal__footer">
+                <button class="pb-btn pb-btn--ghost" id="btn-copy-code">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    ��� �����
+                </button>
+                <button class="pb-btn pb-btn--primary" id="btn-download-code">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    �����
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/platform-builder.js"></script>
+</body>
+</html>

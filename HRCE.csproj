@@ -13,23 +13,49 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="packages\**" />
     <Compile Remove="src\SvelteHybrid.AspNetCore\**" />
+    <Compile Remove="src\WebApplicationMVC.3.0.3\**" />
     <Compile Remove="src\WebApplicationMVC\**" />
+    <Compile Remove="TestApp\**" />
+    <Compile Remove="tools\BuilderRepro\**" />
+    <Compile Remove="Views\Visualization\**" />
+    <Content Remove="packages\**" />
     <Content Remove="src\SvelteHybrid.AspNetCore\**" />
+    <Content Remove="src\WebApplicationMVC.3.0.3\**" />
     <Content Remove="src\WebApplicationMVC\**" />
+    <Content Remove="TestApp\**" />
+    <Content Remove="tools\BuilderRepro\**" />
+    <Content Remove="Views\Visualization\**" />
+    <EmbeddedResource Remove="packages\**" />
     <EmbeddedResource Remove="src\SvelteHybrid.AspNetCore\**" />
+    <EmbeddedResource Remove="src\WebApplicationMVC.3.0.3\**" />
     <EmbeddedResource Remove="src\WebApplicationMVC\**" />
+    <EmbeddedResource Remove="TestApp\**" />
+    <EmbeddedResource Remove="tools\BuilderRepro\**" />
+    <EmbeddedResource Remove="Views\Visualization\**" />
+    <None Remove="packages\**" />
     <None Remove="src\SvelteHybrid.AspNetCore\**" />
+    <None Remove="src\WebApplicationMVC.3.0.3\**" />
     <None Remove="src\WebApplicationMVC\**" />
+    <None Remove="TestApp\**" />
+    <None Remove="tools\BuilderRepro\**" />
+    <None Remove="Views\Visualization\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="tools\BuilderRepro\Program.cs" />
+    <Compile Remove="Controllers\QuantumToolsController.cs" />
+    <Compile Remove="Controllers\VisualizationController.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="tools\BuilderRepro\BuilderRepro.csproj" />
-    <None Include="tools\BuilderRepro\Program.cs" />
+    <Content Remove="package-lock.json" />
+    <Content Remove="package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="HRCE.zip" />
+    <None Remove="publish-nuget.sh" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,7 +75,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\" />
+    <Folder Include="local-nuget-feed\" />
+    <Folder Include="tools\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="src\WebApplicationMVC\Views\Shared\_SvelteHybridScripts.cshtml" />
   </ItemGroup>
 
 </Project>

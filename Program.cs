@@ -3,6 +3,8 @@ using HRCE.Infrastructure.Extensions;
 using HRCE.Data;
 using HRCE.Services.HRCE;
 using HRCE.Services.Node;
+using HRCE.Services.Builder;
+using HRCE.Services.BuildOperations;
 using HRCE.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,11 +43,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // تسجيل خدمات Node.js SSR
 builder.Services.AddHttpClient<INodeService, NodeService>();
 builder.Services.AddHttpContextAccessor(); // مطلوب للتحقق من المستخدم
+builder.Services.AddSingleton<LayoutStore>();
 
 builder.Services.Configure<LogLearningOptions>(builder.Configuration.GetSection("LogLearning"));
 builder.Services.AddSingleton(provider => provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<LogLearningOptions>>().Value);
@@ -69,6 +73,22 @@ builder.Services.Configure<BuilderOptions>(options =>
     options.RootPath = builder.Environment.ContentRootPath;
 });
 builder.Services.AddSingleton<PageBuilder>();
+
+builder.Services.AddOptions<BuildOperationsOptions>()
+    .Bind(builder.Configuration.GetSection("BuildOperations"))
+    .PostConfigure(options =>
+    {
+        if (string.IsNullOrWhiteSpace(options.RootPath))
+        {
+            options.RootPath = builder.Environment.ContentRootPath;
+        }
+    });
+builder.Services.AddSingleton<BuildOperationsService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Administrator"));
+});
 
 // ✨ تسجيل نظام المراقبة متعدد المنصات (eBPF/ETW/DTrace)
 builder.Services.AddPlatformMonitoring(options =>
@@ -117,13 +137,14 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-// ✨ تفعيل HRCE Middleware لمعالجة المكونات الهجينة
+// HRCE Middleware
 app.UseHRCE();
 
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 
 // Platform information endpoint
 app.MapGet("/api/platform", (HRCE.Core.Platform.IPlatformDetectionService service) =>
@@ -146,7 +167,7 @@ app.MapGet("/health", () => Results.Ok(new
 }));
 
 // Svelte SSR endpoint
-app.MapGet("/_svelte/ssr/{component}", async (string component, SvelteRendererCore renderer) =>
+app.MapGet("/_svelte/ssr/{component}", async (string component, [Microsoft.AspNetCore.Mvc.FromServices] SvelteRendererCore renderer) =>
 {
     var result = await renderer.RenderAsync(component);
     return Results.Content(result, "text/html");
@@ -155,5 +176,7 @@ app.MapGet("/_svelte/ssr/{component}", async (string component, SvelteRendererCo
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();

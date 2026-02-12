@@ -548,3 +548,83 @@ Now HRCE will:
 - Verify the build output directory
 
 For more help, see the [FAQ](../faq/faq-general.md).
+
+---
+
+## Extended Examples
+
+### Example A: Inject a Svelte Component in `_Layout`
+
+Use the `@svelte` directive inside `Views/Shared/_Layout.cshtml` to render a component globally:
+
+```cshtml
+@* Views/Shared/_Layout.cshtml *@
+@svelte "_HeaderWidget"
+```
+
+Create the Razor fallback in `Components/HeaderWidget/_HeaderWidget.cshtml`:
+
+```cshtml
+@model HeaderWidgetModel
+
+<div class="header-widget">
+    <strong>@Model.Title</strong>
+    <span>@Model.Subtitle</span>
+</div>
+```
+
+Optional Svelte version in `Components/HeaderWidget/_HeaderWidget.svelte`:
+
+```svelte
+<script>
+  export let model;
+</script>
+
+<div class="header-widget">
+  <strong>{model.title}</strong>
+  <span>{model.subtitle}</span>
+</div>
+```
+
+### Example B: Component With Authorization
+
+```cshtml
+@* Views/Shared/Components/_SecurePanel.cshtml *@
+@svelte "_SecurePanel"
+@require-policy "AdminOnly"
+```
+
+If policy fails, HRCE renders the fallback component configured in `Program.cs`.
+
+### Example C: Use Component in Razor Pages
+
+```cshtml
+@* Pages/Index.cshtml *@
+@model IndexModel
+
+@await Html.PartialAsync("~/Components/ProductCard/_ProductCard.cshtml", Model.Card)
+```
+
+### Example D: Layout Builder Output (Drag & Drop)
+
+Layout blocks are saved as JSON and then rendered in `_Layout.cshtml`. Example payload:
+
+```json
+{
+  "blocks": [
+    { "id": "1", "type": "header", "label": "Main Header" },
+    { "id": "2", "type": "section", "label": "Content" },
+    { "id": "3", "type": "footer", "label": "Footer" }
+  ]
+}
+```
+
+### Example E: Svelte Hybrid Directives (SvelteHybrid.AspNetCore)
+
+```html
+<div s-reactive s-data="{ count: 0 }">
+  <button s-click="count++">Clicked {count}</button>
+</div>
+```
+
+This works without extra JavaScript and upgrades to client-side interactivity automatically.

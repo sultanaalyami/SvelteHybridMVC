@@ -1,144 +1,185 @@
-﻿# Quick Start Guide - HRCE
+﻿# HRCE - Hybrid Razor Component Engine
+## البدء السريع
 
-## اختيار بيئة التطوير
+تم تنفيذ HRCE بنجاح في هذا المشروع! 🎉
 
-### 1️⃣ التطوير على Windows (موصى به للمبتدئين)
+## 📁 هيكل المشروع
 
-إذا كنت تريد فقط تطوير الواجهة الأمامية أو منطق التطبيق:
-
-```powershell
-# استنساخ المشروع
-git clone https://github.com/sultanaalyami/SvelteHybridMVC.git
-cd HRCE
-
-# بناء وتشغيل
-.\build.ps1
-dotnet run
+```
+HRCE/
+├── Services/
+│   └── HRCE/
+│       ├── HRCEOptions.cs              # خيارات التكوين
+│       ├── IHybridViewEngine.cs        # واجهة المحرك الهجين
+│       ├── HybridViewEngine.cs         # تنفيذ المحرك
+│       ├── ISvelteRenderer.cs          # واجهة عارض Svelte
+│       ├── SvelteRenderer.cs           # تنفيذ العارض
+│       ├── IIsolationService.cs        # واجهة خدمة العزل
+│       ├── IsolationService.cs         # تنفيذ العزل
+│       └── ServiceCollectionExtensions.cs
+│
+├── Middleware/
+│   └── HRCEMiddleware.cs               # معالجة التوجيهات
+│
+├── Components/
+│   └── ProductCard/                    # مثال: مكون بطاقة المنتج
+│       ├── ProductCardModel.cs         # Presentation Model
+│       ├── ProductCardPresenter.cs     # Presenter
+│       └── _ProductCard.cshtml         # Razor Template
+│
+└── Program.cs                          # تسجيل الخدمات
 ```
 
-✅ **يعمل بدون eBPF** - سيستخدم NullMonitor
+## 🚀 كيفية الاستخدام
 
-❌ **لا يدعم مراقبة النواة**
+### 1. إنشاء مكون جديد
 
----
+أنشئ مجلد جديد في `Components/` واتبع البنية التالية:
 
-### 2️⃣ التطوير على WSL2 (الخيار الأمثل)
-
-للحصول على تجربة كاملة مع eBPF على Windows:
-
-```powershell
-# تثبيت WSL2
-wsl --install -d Ubuntu-24.04
-
-# الانتقال إلى WSL
-wsl
-
-# داخل WSL
-cd /mnt/x/source/repos/HRCE
-./build.sh
-sudo dotnet run
+```
+Components/
+└── YourComponent/
+    ├── YourComponentModel.cs
+    ├── YourComponentPresenter.cs
+    └── _YourComponent.cshtml
 ```
 
-✅ **دعم كامل لـ eBPF**
+### 2. Presentation Model
 
-✅ **نفس كود المشروع من Windows**
+```csharp
+namespace HRCE.Components.YourComponent;
 
-⚠️ **يتطلب صلاحيات sudo**
-
----
-
-### 3️⃣ التطوير باستخدام Docker (للنشر والاختبار)
-
-```bash
-# تطوير مع Hot Reload
-docker compose --profile dev up
-
-# إنتاج
-docker compose --profile prod up -d
+public record YourComponentModel(
+    string Property1,
+    string Property2
+);
 ```
 
-✅ **بيئة معزولة**
+### 3. Presenter
 
-✅ **دعم كامل لـ eBPF**
+```csharp
+namespace HRCE.Components.YourComponent;
 
-❌ **بطء في Hot Reload**
-
----
-
-## اختبار الميزات
-
-### فحص المنصة
-
-```bash
-curl http://localhost:5000/api/monitoring/platform
-```
-
-الناتج المتوقع:
-```json
+public class YourComponentPresenter
 {
-  "osDescription": "Ubuntu 24.04 LTS",
-  "platform": "Linux",
-  "monitoringSystem": "EbpfLinux"
+    public YourComponentModel Map(object source)
+    {
+        return new YourComponentModel(
+            Property1: "Value 1",
+            Property2: "Value 2"
+        );
+    }
 }
 ```
 
-### فحص الإحصائيات
+### 4. Razor Template
 
-```bash
-curl http://localhost:5000/api/monitoring/stats
+```razor
+@using HRCE.Components.YourComponent
+@model YourComponentModel
+
+<div class="your-component">
+    <h3>@Model.Property1</h3>
+    <p>@Model.Property2</p>
+</div>
+
+<style>
+    .your-component {
+        /* أنماط معزولة */
+    }
+</style>
 ```
 
-### بث الأحداث
+### 5. الاستخدام في الصفحة
 
-```bash
-curl -N http://localhost:5000/api/monitoring/stream
+```razor
+@using HRCE.Components.YourComponent
+
+@{
+    var presenter = new YourComponentPresenter();
+    var model = presenter.Map(yourData);
+}
+
+@await Html.PartialAsync("~/Components/YourComponent/_YourComponent.cshtml", model)
 ```
+
+## ✨ الميزات المتاحة
+
+### ✅ ما يعمل الآن:
+- ✅ **مكونات معزولة** - CSS/JS لكل مكون منفصل
+- ✅ **Presentation Models** - بيانات نظيفة للعرض
+- ✅ **Presenters** - تحويل البيانات بشكل منظم
+- ✅ **Razor Templates** - دعم كامل لـ Razor
+- ✅ **Middleware** - معالجة تلقائية للمكونات
+
+### 🔜 قريباً:
+- 🔜 **Svelte SSR** - عرض Svelte من جانب الخادم
+- 🔜 **Authorization** - سياسات الأمان على مستوى المكونات
+- 🔜 **Hot Reload** - إعادة تحميل سريع أثناء التطوير
+
+## 🧪 اختبار المشروع
+
+1. شغّل المشروع:
+   ```bash
+   dotnet run
+   ```
+
+2. افتح المتصفح على: `https://localhost:5001`
+
+3. ستشاهد صفحة العرض التجريبية مع مكونات ProductCard
+
+## 📖 التكوين
+
+يمكنك تخصيص HRCE في `Program.cs`:
+
+```csharp
+builder.Services.AddHRCE(options =>
+{
+    options.EnableSvelteSSR = true;              // تفعيل Svelte SSR
+    options.ComponentBasePath = "~/Components";   // مسار المكونات
+    options.IsolationMode = IsolationMode.Full;  // وضع العزل
+    options.DefaultRenderer = RendererType.Svelte;
+    options.EnableHotReload = true;              // إعادة التحميل السريع
+});
+```
+
+## 🎯 أفضل الممارسات
+
+1. **افصل المنطق عن العرض**
+   - استخدم Presenters لتحويل البيانات
+   - لا تضع منطق أعمال في Razor
+
+2. **استخدم Immutable Models**
+   - استخدم `record` بدلاً من `class`
+   - تجنب تعديل البيانات بعد الإنشاء
+
+3. **عزل الأنماط**
+   - ضع CSS داخل ملف `.cshtml`
+   - استخدم أسماء فريدة للـ classes
+
+4. **اختبر المكونات**
+   - اختبر Presenters بشكل منفصل
+   - استخدم `data-testid` للاختبار
+
+## 🐛 حل المشكلات
+
+### المكون لا يظهر؟
+- تأكد من المسار الصحيح في `Html.PartialAsync`
+- تحقق من namespace في `@using`
+
+### الأنماط لا تعمل؟
+- تأكد من وجود `<style>` داخل `.cshtml`
+- تحقق من وضع العزل في الإعدادات
+
+### خطأ في البناء؟
+- شغّل `dotnet build`
+- تحقق من `using statements`
+
+## 📚 المزيد من الموارد
+
+راجع `ReadMe.md` الأصلي للتوثيق الكامل باللغة العربية.
 
 ---
 
-## استكشاف المشاكل الشائعة
-
-### ❌ `clang: command not found`
-
-```bash
-# على WSL/Linux
-sudo apt install -y clang llvm
-```
-
-### ❌ `Permission denied` عند التشغيل
-
-```bash
-# استخدم sudo على Linux/WSL
-sudo dotnet run
-
-# أو في Docker
-docker run --privileged ...
-```
-
-### ❌ `eBPF not working on Windows`
-
-eBPF **لا يعمل على Windows مباشرة**.
-
-**الحلول:**
-1. استخدم WSL2 ✅
-2. استخدم Docker Desktop ✅
-3. استخدم Linux VM
-4. تطوير بدون eBPF (سيعمل كل شيء ما عدا مراقبة النواة)
-
----
-
-## الخطوة التالية
-
-بعد نجاح التشغيل:
-
-1. راجع [CROSS-PLATFORM-DEV.md](CROSS-PLATFORM-DEV.md) للتفاصيل
-2. راجع [WSL2-DEVELOPMENT-GUIDE.md](WSL2-DEVELOPMENT-GUIDE.md) لإعداد WSL2
-3. راجع [README.md](../README.md) للوثائق الكاملة
-
----
-
-## الدعم
-
-- 🐛 مشاكل تقنية: [GitHub Issues](https://github.com/sultanaalyami/SvelteHybridMVC/issues)
-- 📖 الوثائق: [docs/](.)
-- 💬 استفسارات: افتح Issue جديد
+**تم التنفيذ بنجاح! 🎉**
+الآن يمكنك البدء ببناء مكونات HRCE الخاصة بك!

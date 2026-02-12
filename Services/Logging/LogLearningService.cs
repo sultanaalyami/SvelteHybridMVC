@@ -61,7 +61,14 @@ public sealed class LogLearningService : BackgroundService
                 _logger.LogWarning(ex, "Log learning cycle failed");
             }
 
-            await Task.Delay(interval, stoppingToken);
+            try
+            {
+                await Task.Delay(interval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
     }
 

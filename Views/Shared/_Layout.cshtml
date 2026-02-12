@@ -4,34 +4,111 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="نظام هجين يجمع بين ASP.NET MVC و Svelte" />
+    <meta name="theme-color" content="#0d1117" />
     <title>@ViewData["Title"] - HRCE</title>
+    <!-- Google Fonts - Inter for Professional Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/hrce.ui.css" />
+    <link rel="stylesheet" href="~/css/hrce.desktop.css" />
+    <link rel="stylesheet" href="~/css/hrce.builder.css" />
 </head>
+@using HRCE.Services.Builder
 @inject HRCE.Services.UiRules.UiRuleEvaluator UiRules
+@inject LayoutStore LayoutStore
 
 @{
     var layoutDecision = await UiRules.GetLayoutDecisionAsync(Context, Context.RequestAborted);
     var layoutClass = $"hrce-layout-{layoutDecision.LayoutKey}";
+    var layoutDefinition = await LayoutStore.GetCurrentAsync(Context.RequestAborted);
+    var layoutBlocks = layoutDefinition.Blocks ?? Array.Empty<LayoutBlock>();
+    var bodyRendered = false;
 }
 
 <body class="@layoutClass">
     <div class="hrce-ui">
         <div class="hrce-app">
-            <header class="hrce-header">
-                @await Component.InvokeAsync("NavigationMenu")
-            </header>
+            @if (layoutBlocks.Any())
+            {
+                foreach (var block in layoutBlocks)
+                {
+                    var blockClass = string.IsNullOrWhiteSpace(block.CssClass) ? string.Empty : block.CssClass;
+                    if (block.Type.Equals("header", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <header class="hrce-header @blockClass">
+                            <div class="hrce-stack">
+                                <strong>@block.Label</strong>
+                                @await Component.InvokeAsync("NavigationMenu")
+                            </div>
+                        </header>
+                    }
+                    else if (block.Type.Equals("nav", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <nav class="hrce-header @blockClass">
+                            <div class="hrce-stack">
+                                <strong>@block.Label</strong>
+                                @await Component.InvokeAsync("NavigationMenu")
+                            </div>
+                        </nav>
+                    }
+                    else if (block.Type.Equals("section", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <main class="hrce-main @blockClass">
+                            <section class="hrce-surface hrce-stack">
+                                <h2>@block.Label</h2>
+                                @if (!bodyRendered)
+                                {
+                                    @RenderSection("PageHeader", required: false)
+                                    @RenderBody()
+                                    bodyRendered = true;
+                                }
+                            </section>
+                        </main>
+                    }
+                    else if (block.Type.Equals("footer", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <footer class="hrce-footer @blockClass">
+                            <p>@block.Label</p>
+                        </footer>
+                    }
+                    else if (block.Type.Equals("link", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <div class="hrce-surface @blockClass">
+                            <a href="@block.Url">@block.Label</a>
+                        </div>
+                    }
+                }
 
-            <main class="hrce-main">
-                <section class="hrce-surface hrce-stack">
-                    @RenderSection("PageHeader", required: false)
-                    @RenderBody()
-                </section>
-            </main>
+                if (!bodyRendered)
+                {
+                    <main class="hrce-main">
+                        <section class="hrce-surface hrce-stack">
+                            @RenderSection("PageHeader", required: false)
+                            @RenderBody()
+                        </section>
+                    </main>
+                }
+            }
+            else
+            {
+                <header class="hrce-header">
+                    @await Component.InvokeAsync("NavigationMenu")
+                </header>
 
-            <footer class="hrce-footer">
-                <p>&copy; @DateTime.Now.Year - <strong>HRCE</strong> | Hybrid Razor + Svelte Runtime</p>
-            </footer>
+                <main class="hrce-main">
+                    <section class="hrce-surface hrce-stack">
+                        @RenderSection("PageHeader", required: false)
+                        @RenderBody()
+                    </section>
+                </main>
+
+                <footer class="hrce-footer">
+                    <p>&copy; @DateTime.Now.Year - <strong>HRCE</strong> | Hybrid Razor + Svelte Runtime</p>
+                </footer>
+            }
         </div>
     </div>
 

@@ -1,4 +1,5 @@
 ﻿using HRCE.Core;
+using HRCE.Services.HRCE;
 
 namespace HRCE.Infrastructure.Extensions;
 
@@ -12,7 +13,7 @@ public static class SvelteServiceExtensions
         configure?.Invoke(options);
 
         services.AddSingleton(options);
-        services.AddSingleton<ISvelteRenderer, SvelteRenderer>();
+        services.AddSingleton<Services.HRCE.ISvelteRenderer, SvelteRenderer>();
 
         return services;
     }

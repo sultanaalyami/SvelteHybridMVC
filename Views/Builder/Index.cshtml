@@ -2,97 +2,262 @@
     ViewData["Title"] = "Builder";
 }
 
-<section class="hrce-stack">
-    <header class="hrce-stack">
+<section class="hrce-stack hrce-builder">
+    <header class="hrce-page-header">
         <h1>„’„„ ’›Õ«  HRCE</h1>
         <p class="hrce-muted">Ê«ÃÂ…  ÿÊÌ— –ﬂÌ… ·»‰«¡ ’›Õ«  MVC ÊﬁÊ«⁄œ «· ‰ﬁ· œÊ‰ „€«œ—… «·„ ’›Õ.</p>
     </header>
 
+    <!-- Main Builder Grid -->
     <div class="hrce-grid hrce-grid--two">
-        <div class="hrce-surface">
-            <h3>≈‰‘«¡ ’›Õ… ÃœÌœ…</h3>
-            <form id="page-form" class="hrce-stack">
+        <!-- Page Creation Panel -->
+        <div class="hrce-surface hrce-panel">
+            <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                ≈‰‘«¡ ’›Õ… ÃœÌœ…
+            </h3>
+            <form id="page-form" class="hrce-stack hrce-form">
                 @Html.AntiForgeryToken()
-                <label>
-                    <span>«·«”„</span>
-                    <input class="hrce-input" name="name" placeholder="Dashboard" required />
-                </label>
-                <label>
-                    <span>«·⁄‰Ê«‰</span>
-                    <input class="hrce-input" name="title" placeholder="·ÊÕ… «· Õﬂ„" />
-                </label>
-                <label>
-                    <span>«·œÊ— («Œ Ì«—Ì)</span>
-                    <input class="hrce-input" name="role" placeholder="Administrator" />
-                </label>
-                <label>
-                    <span>”Ì«”… («Œ Ì«—Ì)</span>
-                    <input class="hrce-input" name="policy" placeholder="RequireManagers" />
-                </label>
-                <label>
-                    <span> ÕœÌÀ  ·ﬁ«∆Ì »⁄œ «·≈‰‘«¡</span>
-                    <select class="hrce-input" name="autoRefresh">
-                        <option value="true">‰⁄„</option>
-                        <option value="false">·«</option>
-                    </select>
-                </label>
-                <button class="btn btn-primary" type="submit">≈‰‘«¡</button>
+                <div class="hrce-form-group">
+                    <label>
+                        <span>«·«”„</span>
+                        <input class="hrce-input" name="name" placeholder="Dashboard" required />
+                    </label>
+                </div>
+                <div class="hrce-form-group">
+                    <label>
+                        <span>«·⁄‰Ê«‰</span>
+                        <input class="hrce-input" name="title" placeholder="·ÊÕ… «· Õﬂ„" />
+                    </label>
+                </div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="hrce-form-row">
+                        <label>
+                            <span>«·œÊ— («Œ Ì«—Ì)</span>
+                            <input class="hrce-input" name="role" placeholder="Administrator" />
+                        </label>
+                        <label>
+                            <span>«·”Ì«”… («Œ Ì«—Ì)</span>
+                            <input class="hrce-input" name="policy" placeholder="RequireManagers" />
+                        </label>
+                    </div>
+                }
+                <div class="hrce-form-group">
+                    <label>
+                        <span> ÕœÌÀ «· ŒÿÌÿ »⁄œ «·≈‰‘«¡</span>
+                        <select class="hrce-input" name="autoRefresh">
+                            <option value="true">‰⁄„</option>
+                            <option value="false">·«</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="hrce-form-actions">
+                    <button class="btn btn-primary" type="submit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        ≈‰‘«¡ «·’›Õ…
+                    </button>
+                </div>
             </form>
-            <div id="page-result" class="hrce-muted"></div>
+            <div id="page-result" class="hrce-status-message"></div>
         </div>
 
-        <div class="hrce-surface">
-            <h3>ﬁÊ«⁄œ «· ‰ﬁ·</h3>
-            <form id="rule-form" class="hrce-stack">
-                @Html.AntiForgeryToken()
-                <label>
-                    <span>Controller</span>
-                    <input class="hrce-input" name="controller" placeholder="Home" />
-                </label>
-                <label>
-                    <span>Action</span>
-                    <input class="hrce-input" name="action" placeholder="Index" />
-                </label>
-                <label>
-                    <span>Role</span>
-                    <input class="hrce-input" name="role" placeholder="Administrator" />
-                </label>
-                <label>
-                    <span>Claim</span>
-                    <input class="hrce-input" name="claimType" placeholder="permission" />
-                </label>
-                <label>
-                    <span>Claim Value</span>
-                    <input class="hrce-input" name="claimValue" placeholder="ui.builder" />
-                </label>
-                <label>
-                    <span>Visible</span>
-                    <select class="hrce-input" name="isVisible">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </label>
-                <button class="btn btn-secondary" type="submit">≈÷«›… ﬁ«⁄œ…</button>
-            </form>
+        <!-- Layout Builder Panel -->
+        <div class="hrce-surface hrce-panel">
+            <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                „Õ—— «· ŒÿÌÿ (Drag &amp; Drop)
+            </h3>
+            <div class="hrce-stack">
+                <p class="hrce-muted">«”Õ» «·⁄‰«’— „‰ «·„Ã„Ê⁄… «·„ «Õ… ≈·Ï „‰ÿﬁ… «· ŒÿÌÿ.</p>
+                <div class="hrce-grid hrce-grid--two">
+                    <div class="hrce-card hrce-palette-card">
+                        <div class="hrce-card__label">«·⁄‰«’— «·„ «Õ…</div>
+                        <div class="hrce-stack hrce-palette" id="layout-palette"></div>
+                    </div>
+                    <div class="hrce-card hrce-palette-card">
+                        <div class="hrce-card__label">«·—Ê«»ÿ «·„ «Õ…</div>
+                        <div class="hrce-stack hrce-palette" id="layout-links"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="hrce-surface">
-        <h3>«·ﬁÊ«⁄œ «·Õ«·Ì…</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Scope</th>
-                    <th>Target</th>
-                    <th>Role</th>
-                    <th>Claim</th>
-                    <th>Visible</th>
-                </tr>
-            </thead>
-            <tbody id="rule-table">
-                <tr><td colspan="5">Loading...</td></tr>
-            </tbody>
-        </table>
+    <!-- Layout Canvas Section -->
+    <div class="hrce-surface hrce-panel hrce-canvas-panel">
+        <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            „‰ÿﬁ… «· ŒÿÌÿ
+        </h3>
+        <div id="layout-canvas" class="hrce-canvas"></div>
+        
+        <!-- Canvas Actions -->
+        <div class="hrce-canvas-controls">
+            <div class="hrce-grid hrce-grid--two">
+                <div class="hrce-form-group">
+                    <label>
+                        <span>«”„ «·‰”Œ…</span>
+                        <input class="hrce-input" id="layout-version-name" placeholder="Release 1" />
+                    </label>
+                </div>
+                <div class="hrce-button-group">
+                    <button class="btn btn-primary" id="layout-save" type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Õ›Ÿ ‰”Œ…
+                    </button>
+                    <button class="btn btn-secondary" id="layout-save-quick" type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Õ›Ÿ ”—Ì⁄
+                    </button>
+                </div>
+            </div>
+            <div class="hrce-grid hrce-grid--two">
+                <div class="hrce-form-group">
+                    <label>
+                        <span>«·≈’œ«—«  «·”«»ﬁ…</span>
+                        <select class="hrce-input" id="layout-versions"></select>
+                    </label>
+                </div>
+                <div class="hrce-button-group">
+                    <button class="btn btn-light" id="layout-restore" type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        «” ⁄«œ… ‰”Œ…
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="hrce-status-bar" id="layout-status"></div>
+    </div>
+
+    <!-- Rules Section -->
+    <div class="hrce-grid hrce-grid--two">
+        <!-- Rule Form -->
+        <div class="hrce-surface hrce-panel">
+            <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                ≈÷«›… ﬁ«⁄œ…
+            </h3>
+            <form id="rule-form" class="hrce-stack hrce-form">
+                @Html.AntiForgeryToken()
+                <div class="hrce-form-row">
+                    <label>
+                        <span>Controller</span>
+                        <input class="hrce-input" name="controller" placeholder="Home" />
+                    </label>
+                    <label>
+                        <span>Action</span>
+                        <input class="hrce-input" name="action" placeholder="Index" />
+                    </label>
+                </div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="hrce-form-row">
+                        <label>
+                            <span>Role</span>
+                            <input class="hrce-input" name="role" placeholder="Administrator" />
+                        </label>
+                        <label>
+                            <span>Claim</span>
+                            <input class="hrce-input" name="claimType" placeholder="permission" />
+                        </label>
+                    </div>
+                    <div class="hrce-form-group">
+                        <label>
+                            <span>Claim Value</span>
+                            <input class="hrce-input" name="claimValue" placeholder="ui.builder" />
+                        </label>
+                    </div>
+                }
+                <div class="hrce-form-group">
+                    <label>
+                        <span>Visible</span>
+                        <select class="hrce-input" name="isVisible">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="hrce-form-actions">
+                    <button class="btn btn-secondary" type="submit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        ≈÷«›… ﬁ«⁄œ…
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Rules Table -->
+        <div class="hrce-surface hrce-panel">
+            <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                «·ﬁÊ«⁄œ «·„”Ã·…
+            </h3>
+            <div class="hrce-table-container">
+                <table class="table hrce-data-table" data-identity-columns="@(User.Identity?.IsAuthenticated == true ? "true" : "false")">
+                    <thead>
+                        <tr>
+                            <th>Scope</th>
+                            <th>Target</th>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <th>Role</th>
+                                <th>Claim</th>
+                            }
+                            <th>Visible</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rule-table">
+                        <tr class="hrce-loading-row">
+                            <td colspan="@(User.Identity?.IsAuthenticated == true ? 5 : 3)">
+                                <div class="hrce-loading-indicator">
+                                    <span class="hrce-spinner"></span>
+                                    Ã«—Ì «· Õ„Ì·...
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </section>
 
